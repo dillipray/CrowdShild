@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Crowd Stampede</string>
+    <string name="dashboard_title">Crowd Safety Dashboard</string>
+    <string name="emergency_sos">EMERGENCY SOS</string>
+    <string name="risk_safe">SAFE</string>
+    <string name="risk_caution">CAUTION</string>
+    <string name="risk_high">HIGH RISK</string>
+</resources>
