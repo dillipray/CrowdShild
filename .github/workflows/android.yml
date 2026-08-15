@@ -1,0 +1,111 @@
+name: Android CI/CD Pipeline
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events targeting the specified branches
+  push:
+    branches:
+      - main
+      - develop
+
+  # Triggers the workflow on pull request events targeting the specified branches
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  # Allows manual triggering of the workflow from the GitHub Actions UI
+  workflow_dispatch:
+
+# Concurrency settings: cancel in-progress runs for PRs to conserve CI minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+# Set standard permissions following the principle of least privilege
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build, Test & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 # Prevent runaway builds
+
+    # Environment variables mapped from GitHub Secrets (zero hardcoded credentials)
+    env:
+      # Memory tuning for JVM & Gradle daemon on CI runners
+      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+      # Example secret mappings if needed by build/signing/API integrations:
+      # API_KEY: ${{ secrets.APP_API_KEY }}
+      # MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+
+    steps:
+      # Step 1: Checkout repository source code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history to support git-based versioning and lint baseline checks
+          fetch-depth: 0
+
+      # Step 2: Set up Java JDK 21 (Temurin distribution) with caching
+      - name: Set up JDK 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      # Step 3: Set up official Gradle GitHub Action for optimized build cache and task execution
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          # Automatically generates dependency graph and manages Gradle User Home cache
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+      # Step 4: Ensure the Gradle wrapper executable has execution permissions on Linux
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      # Step 5: Run Android Lint analysis to catch structural, security, and performance issues
+      - name: Run Android Linter (lintDebug)
+        run: ./gradlew lintDebug --no-daemon --stacktrace
+
+      # Upload Lint Report on failure or success for debugging
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-lint-report
+          path: |
+            app/build/reports/lint-results-debug.html
+            app/build/reports/lint-results-debug.xml
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Step 6: Execute Local Unit Tests (JUnit & Mock tests)
+      - name: Run Local Unit Tests (testDebugUnitTest)
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+
+      # Upload Unit Test Results on failure or success
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/reports/tests/testDebugUnitTest/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Step 7: Assemble Debug APK binary
+      - name: Assemble Debug APK (assembleDebug)
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      # Step 8: Upload the generated APK binary as a downloadable GitHub Actions artifact
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crowdshield-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+          if-no-files-found: error
