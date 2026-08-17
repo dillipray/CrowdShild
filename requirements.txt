@@ -1,0 +1,31 @@
+# Core Numerical & Image Processing
+numpy>=1.26.0
+opencv-python>=4.8.0
+pillow>=10.0.0
+scipy>=1.11.0
+matplotlib>=3.8.0
+
+# Deep Learning & Computer Vision Models
+torch>=2.2.0
+torchvision>=0.17.0
+ultralytics>=8.2.0
+
+# Object Tracking & Spatial Geometry
+supervision>=0.20.0
+filterpy>=1.4.5
+shapely>=2.0.0
+scikit-learn>=1.4.0
+
+# Web & Real-Time API Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+
+# Async PostgreSQL / PostGIS Telemetry Persistence
+asyncpg>=0.29.0
+
+# Utilities
+tqdm>=4.66.0
+pydantic>=2.6.0
+pyyaml>=6.0.1
+requests>=2.31.0
