@@ -377,6 +377,7 @@ class AsyncPostGISStorage:
         logger.info("[PostGIS] Schema initialised (range-partitioned tables + spatial indexes ready).")
 
     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
     # Background worker loop
     # ------------------------------------------------------------------
 
@@ -389,7 +390,6 @@ class AsyncPostGISStorage:
         deadline = time.monotonic() + self.config.postgres_flush_interval_sec
 
         while self._running or not self._queue.empty():
-            # Compute time remaining until the flush deadline
             now = time.monotonic()
             timeout = max(0.01, deadline - now)
 
@@ -562,6 +562,72 @@ class AsyncPostGISStorage:
                             max_lng,    # $12
                             max_lat,    # $13
                         )
+
+    # ------------------------------------------------------------------
+    # Query Helpers for Telemetry Insights & Verification
+    # ------------------------------------------------------------------
+
+    async def fetch_recent_telemetry(self, limit: int = 15) -> List[dict]:
+        """Fetch the most recent persisted telemetry records from the database."""
+        if not self._pool:
+            return []
+        try:
+            async with self._pool.acquire() as conn:
+                rows = await conn.fetch(
+                    """
+                    SELECT id, camera_id, location_name, frame_index, captured_at,
+                           fps, total_humans, hotspot_count, active_clusters,
+                           risk_score, risk_level, avg_velocity, accel_variance,
+                           is_bottleneck, is_surge
+                    FROM telemetry_frames
+                    ORDER BY captured_at DESC
+                    LIMIT $1
+                    """,
+                    limit,
+                )
+                return [
+                    {
+                        "id": r["id"],
+                        "camera_id": r["camera_id"],
+                        "location_name": r["location_name"],
+                        "frame_index": r["frame_index"],
+                        "captured_at": r["captured_at"].isoformat() if r["captured_at"] else None,
+                        "fps": round(float(r["fps"]), 1),
+                        "total_humans": r["total_humans"],
+                        "hotspot_count": r["hotspot_count"],
+                        "active_clusters": r["active_clusters"],
+                        "risk_score": round(float(r["risk_score"]), 2),
+                        "risk_level": r["risk_level"],
+                        "avg_velocity": round(float(r["avg_velocity"]), 2),
+                        "accel_variance": round(float(r["accel_variance"]), 2),
+                        "is_bottleneck": bool(r["is_bottleneck"]),
+                        "is_surge": bool(r["is_surge"]),
+                    }
+                    for r in rows
+                ]
+        except Exception as exc:
+            logger.error("[PostGIS] fetch_recent_telemetry error: %s", exc)
+            return []
+
+    async def fetch_db_summary(self) -> dict:
+        """Fetch aggregated telemetry totals from the PostgreSQL database."""
+        if not self._pool:
+            return {"connected": False}
+        try:
+            async with self._pool.acquire() as conn:
+                total_frames = await conn.fetchval("SELECT count(*) FROM telemetry_frames")
+                total_clusters = await conn.fetchval("SELECT count(*) FROM crowd_clusters_spatial")
+                total_hotspots = await conn.fetchval("SELECT count(*) FROM hotspots_spatial")
+                return {
+                    "connected": True,
+                    "total_telemetry_frames": total_frames or 0,
+                    "total_clusters_recorded": total_clusters or 0,
+                    "total_hotspots_recorded": total_hotspots or 0,
+                    "session_stats": self.stats,
+                }
+        except Exception as exc:
+            logger.error("[PostGIS] fetch_db_summary error: %s", exc)
+            return {"connected": True, "error": str(exc), "session_stats": self.stats}
 
     # ------------------------------------------------------------------
     # Diagnostics

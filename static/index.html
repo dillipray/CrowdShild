@@ -60,25 +60,45 @@
               <polygon points="23 7 16 12 23 17 23 7"/>
               <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
             </svg>
-            Live Computer Vision Stream (Human Class 0)
+            Live Computer Vision Stream (YOLOv8 Human Class 0)
           </div>
-          <div class="btn-group">
-            <button id="btnSimMode" class="btn active">Simulation</button>
-            <button id="btnCamMode" class="btn">Live Webcam</button>
+          <div class="video-source-bar">
+            <button id="btnLargeCrowd" class="source-pill active">
+              <span class="indicator"></span>
+              large_crowd.mp4
+            </button>
+            <button id="btnMediumCrowd" class="source-pill">
+              <span class="indicator"></span>
+              medium_crowd.mp4
+            </button>
+            <button id="btnSmallCrowd" class="source-pill">
+              <span class="indicator"></span>
+              small_crowd.mp4
+            </button>
+            <button id="btnCamMode" class="source-pill">
+              <span class="indicator"></span>
+              Live Webcam
+            </button>
+            <button id="btnSimMode" class="source-pill">
+              <span class="indicator"></span>
+              Simulation
+            </button>
           </div>
         </div>
 
         <div class="video-wrapper">
           <img id="videoStream" src="/video_feed" alt="Real-time Annotated Feed" class="video-stream">
           <div class="video-overlay-tags">
-            <span class="tag" style="color: var(--accent-cyan);">YOLOv8 Class 0 (Humans Only)</span>
+            <span id="activeSourceTag" class="tag" style="color: var(--accent-cyan);">Source: large_crowd.mp4</span>
+            <span class="tag" style="color: #38bdf8;">YOLOv8 Class 0 (Persons)</span>
             <span class="tag" style="color: var(--color-safe);">ByteTrack Active</span>
+            <span id="dbSyncTag" class="tag" style="color: #10b981;">PostGIS DB: Connected</span>
           </div>
         </div>
 
         <div class="controls-row">
           <div style="font-size: 0.8rem; color: var(--text-muted);">
-            WebSocket streaming active to Android (<code style="color: var(--accent-cyan);">/ws/mobile</code>) & Dashboard (<code style="color: var(--accent-cyan);">/ws/dashboard</code>)
+            Active Stream: <code id="activeSourceLabel" style="color: var(--accent-cyan);">videos/large_crowd.mp4</code> • WebSockets: <code style="color: var(--accent-cyan);">/ws/dashboard</code> & <code style="color: var(--accent-cyan);">/ws/mobile</code>
           </div>
           <button id="btnTriggerSos" class="btn btn-danger">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -229,6 +249,68 @@
       </section>
 
     </div>
+
+    <!-- Full Width: Database Telemetry Persistence Panel -->
+    <section class="glass-card db-panel">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+          PostgreSQL / PostGIS Database Telemetry Stream (Live Storage)
+        </div>
+        <div class="badge online">
+          <span class="dot"></span>
+          <span id="dbStatusLabel">Supabase Connected (Pool: Active)</span>
+        </div>
+      </div>
+
+      <div class="db-stats-row">
+        <div class="db-stat-card">
+          <span class="db-title">Stored Telemetry Frames</span>
+          <span id="dbTotalFrames" class="db-val">0</span>
+        </div>
+        <div class="db-stat-card">
+          <span class="db-title">Spatial Clusters (PostGIS)</span>
+          <span id="dbTotalClusters" class="db-val">0</span>
+        </div>
+        <div class="db-stat-card">
+          <span class="db-title">Spatial Hotspots (PostGIS)</span>
+          <span id="dbTotalHotspots" class="db-val">0</span>
+        </div>
+        <div class="db-stat-card">
+          <span class="db-title">Async Queue Depth</span>
+          <span id="dbQueueDepth" class="db-val">0</span>
+        </div>
+      </div>
+
+      <div class="db-table-wrapper">
+        <table class="db-table">
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>Time (UTC)</th>
+              <th>Camera</th>
+              <th>Location</th>
+              <th>Humans</th>
+              <th>Hotspots</th>
+              <th>Risk Level</th>
+              <th>Risk Score</th>
+              <th>Avg Velocity</th>
+            </tr>
+          </thead>
+          <tbody id="dbRecordsBody">
+            <tr>
+              <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                Streaming telemetry from YOLO pipeline to PostgreSQL database...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
   </main>
 

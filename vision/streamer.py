@@ -4,6 +4,7 @@ Ingests frames from video sources (webcam, video files, RTSP, or synthetic simul
 processes them with CrowdVisionPipeline, and yields telemetry + encoded frames.
 """
 
+import os
 import asyncio
 import base64
 import time
@@ -24,7 +25,7 @@ logger = logging.getLogger("CrowdShield.Streamer")
 
 class VisionStreamManager:
     """
-    Manages live camera capture, synthetic crowd simulation, and WebSocket broadcasts.
+    Manages live camera capture, video file streaming, synthetic crowd simulation, and WebSocket broadcasts.
     """
 
     def __init__(self, config: Optional[VisionConfig] = None):
@@ -34,9 +35,22 @@ class VisionStreamManager:
         self.mobile_connections: Set[WebSocket] = set()
         self.dashboard_connections: Set[WebSocket] = set()
         self.is_running = False
-        self.source_mode = "simulation"  # "simulation", "camera", or "custom"
+        
+        # Source mode: "video", "camera", or "simulation"
+        self.source_mode = self.config.source_mode
+        self.video_path = self.config.video_source
         self.camera_index = 0
         self.video_cap: Optional[cv2.VideoCapture] = None
+        
+        # Initialize video capture if configured
+        if self.source_mode == "video" and self.video_path:
+            self._open_video_capture(self.video_path)
+        elif self.source_mode == "camera":
+            self.video_cap = cv2.VideoCapture(self.camera_index)
+            if not self.video_cap.isOpened():
+                logger.warning(f"Could not open camera {self.camera_index}. Defaulting to simulation.")
+                self.source_mode = "simulation"
+
         self.latest_result: Optional[FrameDensityResult] = None
         self.latest_frame_bgr: Optional[np.ndarray] = None
         self.latest_annotated_bgr: Optional[np.ndarray] = None
@@ -50,6 +64,30 @@ class VisionStreamManager:
         # Wire the non-blocking enqueue as the pipeline's telemetry sink
         if self.telemetry_storage is not None:
             self.pipeline.telemetry_sink = self.telemetry_storage.enqueue
+
+    def _open_video_capture(self, video_path: str) -> bool:
+        """Internal helper to open a video capture source."""
+        if self.video_cap and self.video_cap.isOpened():
+            self.video_cap.release()
+        
+        # Handle relative or absolute paths
+        target_path = video_path
+        if not os.path.isabs(target_path) and not os.path.exists(target_path):
+            alt_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), target_path)
+            if os.path.exists(alt_path):
+                target_path = alt_path
+
+        self.video_cap = cv2.VideoCapture(target_path)
+        if self.video_cap.isOpened():
+            self.video_path = video_path
+            self.source_mode = "video"
+            logger.info(f"[VisionStreamManager] Successfully opened video file source: '{target_path}'")
+            return True
+        else:
+            logger.warning(f"[VisionStreamManager] Could not open video file: '{video_path}'. Falling back to simulation.")
+            self.source_mode = "simulation"
+            self.video_cap = None
+            return False
 
     async def connect_client(self, websocket: WebSocket, client_type: str = "web"):
         """Register a new WebSocket client."""
@@ -78,6 +116,8 @@ class VisionStreamManager:
             "type": "CROWD_TELEMETRY",
             "package": "com.crowdshield.stampede",
             "timestamp": result.timestamp_ms,
+            "sourceMode": self.source_mode,
+            "videoSource": os.path.basename(self.video_path) if self.video_path else "Live Stream",
             "riskScore": {
                 "score": result.risk_score.score,
                 "level": result.risk_score.level.value,
@@ -123,6 +163,8 @@ class VisionStreamManager:
             "frameIndex": result.frame_index,
             "timestamp": result.timestamp_ms,
             "fps": result.fps,
+            "sourceMode": self.source_mode,
+            "videoSource": os.path.basename(self.video_path) if self.video_path else "Simulation",
             "summary": result.summary.model_dump(),
             "detectionsCount": len(result.detections),
             "detections": [d.model_dump() for d in result.detections[:30]],  # Cap for payload efficiency
@@ -209,7 +251,8 @@ class VisionStreamManager:
     async def run_stream_loop(self, fps: int = 15):
         """
         Continuous streaming worker loop.
-        Starts the PostGIS telemetry worker on entry and drains it cleanly on exit.
+        Processes video frames from the active source (video file, camera, or simulation),
+        runs YOLO analysis, renders annotations, enqueues DB telemetry, and broadcasts over WebSockets.
         """
         self.is_running = True
         interval = 1.0 / max(1, fps)
@@ -223,12 +266,36 @@ class VisionStreamManager:
 
         while self.is_running:
             start_t = time.perf_counter()
+            frame = None
 
-            if self.source_mode == "camera" and self.video_cap and self.video_cap.isOpened():
-                ret, frame = self.video_cap.read()
-                if not ret:
+            if self.source_mode in ("video", "camera"):
+                if self.video_cap is not None and self.video_cap.isOpened():
+                    ret, raw_frame = self.video_cap.read()
+                    if not ret:
+                        if self.source_mode == "video":
+                            # Seamless loop back to the beginning of the video file
+                            self.video_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                            ret, raw_frame = self.video_cap.read()
+                            if not ret:
+                                # Reopen file if seeking fails
+                                self._open_video_capture(self.video_path)
+                                if self.video_cap and self.video_cap.isOpened():
+                                    ret, raw_frame = self.video_cap.read()
+                        if ret and raw_frame is not None:
+                            frame = raw_frame
+                        else:
+                            frame = self.generate_synthetic_crowd_frame()
+                    else:
+                        frame = raw_frame
+                else:
+                    # Try to re-initialize video source if closed
+                    if self.source_mode == "video" and self.video_path:
+                        self._open_video_capture(self.video_path)
                     frame = self.generate_synthetic_crowd_frame()
             else:
+                frame = self.generate_synthetic_crowd_frame()
+
+            if frame is None or frame.size == 0:
                 frame = self.generate_synthetic_crowd_frame()
 
             self.latest_frame_bgr = frame
@@ -248,6 +315,10 @@ class VisionStreamManager:
         # Drain and close PostGIS pool on loop exit
         if self.telemetry_storage is not None:
             await self.telemetry_storage.disconnect()
+
+    def set_source_video(self, video_path: str) -> bool:
+        """Switch stream source to a local video file (e.g. 'videos/large_crowd.mp4')."""
+        return self._open_video_capture(video_path)
 
     def set_source_camera(self, camera_index: int = 0):
         """Switch stream source to a physical camera index."""

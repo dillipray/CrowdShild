@@ -1,5 +1,5 @@
 /**
- * CrowdShield Web Command Dashboard - Real-time WebSocket Client & Telemetry Visualizer
+ * CrowdShield Web Command Dashboard - Real-time WebSocket Client, Video Switcher & Telemetry Visualizer
  */
 
 class CrowdShieldDashboard {
@@ -15,11 +15,13 @@ class CrowdShieldDashboard {
     };
     this.maxHistoryPoints = 25;
     this.audioContext = null;
+    this.activeSource = 'large_crowd.mp4';
 
     this.initChart();
     this.initGrid();
     this.connectWebSocket();
     this.bindEvents();
+    this.startDbPolling();
   }
 
   initChart() {
@@ -137,11 +139,11 @@ class CrowdShieldDashboard {
     // 1. Update Top Stats
     document.getElementById('statHumans').textContent = data.summary.total_humans || 0;
     document.getElementById('statHotspots').textContent = data.summary.hotspot_count || 0;
-    document.getElementById('statClusters').textContent = data.clusters.length || 0;
+    document.getElementById('statClusters').textContent = data.clusters ? data.clusters.length : 0;
     document.getElementById('statVelocity').textContent = `${(data.movement.avg_velocity_px || 0).toFixed(1)} px`;
     document.getElementById('statAccelVar').textContent = (data.movement.accel_variance || 0).toFixed(2);
     document.getElementById('statFps').textContent = (data.fps || 0).toFixed(1);
-    document.getElementById('statMobileClients').textContent = data.clientStats.mobileClients || 0;
+    document.getElementById('statMobileClients').textContent = data.clientStats ? data.clientStats.mobileClients || 0 : 0;
 
     // 2. Update Risk Gauge
     const score = data.riskScore.score || 0.0;
@@ -237,7 +239,7 @@ class CrowdShieldDashboard {
       const osc = this.audioContext.createOscillator();
       const gain = this.audioContext.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880, this.audioContext.currentTime); // A5 note
+      osc.frequency.setValueAtTime(880, this.audioContext.currentTime);
       osc.frequency.exponentialRampToValueAtTime(440, this.audioContext.currentTime + 0.2);
       gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
@@ -250,17 +252,112 @@ class CrowdShieldDashboard {
     }
   }
 
+  setActivePill(activeId, label, path) {
+    const pillIds = ['btnLargeCrowd', 'btnMediumCrowd', 'btnSmallCrowd', 'btnCamMode', 'btnSimMode'];
+    pillIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (id === activeId) el.classList.add('active');
+        else el.classList.remove('active');
+      }
+    });
+
+    const activeSourceTag = document.getElementById('activeSourceTag');
+    if (activeSourceTag) activeSourceTag.textContent = `Source: ${label}`;
+
+    const activeSourceLabel = document.getElementById('activeSourceLabel');
+    if (activeSourceLabel) activeSourceLabel.textContent = path;
+  }
+
+  async switchVideoSource(videoPath, buttonId, label) {
+    try {
+      const res = await fetch('/api/v1/source/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_path: videoPath })
+      });
+      if (res.ok) {
+        this.setActivePill(buttonId, label, videoPath);
+      }
+    } catch (e) {
+      console.error('Error switching video source:', e);
+    }
+  }
+
+  async startDbPolling() {
+    const fetchDb = async () => {
+      try {
+        // 1. Fetch Stats
+        const statsRes = await fetch('/api/v1/telemetry/stats');
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          if (stats.enabled && stats.database) {
+            document.getElementById('dbTotalFrames').textContent = stats.database.total_telemetry_frames || 0;
+            document.getElementById('dbTotalClusters').textContent = stats.database.total_clusters_recorded || 0;
+            document.getElementById('dbTotalHotspots').textContent = stats.database.total_hotspots_recorded || 0;
+            document.getElementById('dbQueueDepth').textContent = stats.queue_depth || 0;
+          }
+        }
+
+        // 2. Fetch Recent Records
+        const recentRes = await fetch('/api/v1/telemetry/recent?limit=8');
+        if (recentRes.ok) {
+          const recData = await recentRes.json();
+          if (recData.connected && recData.records && recData.records.length > 0) {
+            const tbody = document.getElementById('dbRecordsBody');
+            tbody.innerHTML = recData.records.map(r => {
+              const dt = r.captured_at ? r.captured_at.replace('T', ' ').substring(11, 19) : '--';
+              let badgeClass = 'badge-risk-safe';
+              if (r.risk_level === 'HIGH_RISK') badgeClass = 'badge-risk-high';
+              else if (r.risk_level === 'CAUTION') badgeClass = 'badge-risk-caution';
+
+              return `
+                <tr>
+                  <td><code style="color: #38bdf8;">#${r.id}</code></td>
+                  <td>${dt}</td>
+                  <td>CAM-${r.camera_id}</td>
+                  <td>${r.location_name}</td>
+                  <td><strong style="color: #fff;">${r.total_humans}</strong></td>
+                  <td><span style="color: ${r.hotspot_count > 0 ? '#ef4444' : '#64748b'};">${r.hotspot_count}</span></td>
+                  <td><span class="${badgeClass}">${r.risk_level}</span></td>
+                  <td><strong style="color: #f1f5f9;">${r.risk_score.toFixed(2)}</strong></td>
+                  <td>${r.avg_velocity.toFixed(1)} px</td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching database telemetry:', err);
+      }
+    };
+
+    // Initial fetch and 2.5-second periodic refresh
+    await fetchDb();
+    setInterval(fetchDb, 2500);
+  }
+
   bindEvents() {
-    document.getElementById('btnSimMode')?.addEventListener('click', async () => {
-      await fetch('/api/v1/source/simulation', { method: 'POST' });
-      document.getElementById('btnSimMode').classList.add('active');
-      document.getElementById('btnCamMode').classList.remove('active');
+    document.getElementById('btnLargeCrowd')?.addEventListener('click', () => {
+      this.switchVideoSource('videos/large_crowd.mp4', 'btnLargeCrowd', 'large_crowd.mp4');
+    });
+
+    document.getElementById('btnMediumCrowd')?.addEventListener('click', () => {
+      this.switchVideoSource('videos/medium_crowd.mp4', 'btnMediumCrowd', 'medium_crowd.mp4');
+    });
+
+    document.getElementById('btnSmallCrowd')?.addEventListener('click', () => {
+      this.switchVideoSource('videos/small_crowd.mp4', 'btnSmallCrowd', 'small_crowd.mp4');
     });
 
     document.getElementById('btnCamMode')?.addEventListener('click', async () => {
       await fetch('/api/v1/source/camera', { method: 'POST' });
-      document.getElementById('btnCamMode').classList.add('active');
-      document.getElementById('btnSimMode').classList.remove('active');
+      this.setActivePill('btnCamMode', 'Live Webcam', 'Device: /dev/video0');
+    });
+
+    document.getElementById('btnSimMode')?.addEventListener('click', async () => {
+      await fetch('/api/v1/source/simulation', { method: 'POST' });
+      this.setActivePill('btnSimMode', 'Synthetic Simulation', 'Synthetic Generator');
     });
 
     document.getElementById('btnTriggerSos')?.addEventListener('click', async () => {

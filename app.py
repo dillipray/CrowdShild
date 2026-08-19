@@ -92,6 +92,7 @@ def health_check():
         "status": "healthy",
         "timestamp": int(time.time() * 1000),
         "source_mode": stream_manager.source_mode,
+        "video_source": stream_manager.video_path,
         "camera_id": config.camera_id,
         "location_name": config.location_name,
         "active_mobile_clients": len(stream_manager.mobile_connections),
@@ -194,21 +195,46 @@ def video_feed():
 # REST API Endpoints
 # ==============================================================================
 
-@app.post("/api/v1/process-frame", response_model=FrameDensityResult)
-async def process_single_frame(file: UploadFile = File(...)):
-    """Ingest a single frame via multipart/form-data upload and return density result."""
-    try:
-        contents = await file.read()
-        nparr = np.frombuffer(contents, np.uint8)
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+class VideoSourcePayload(BaseModel):
+    video_path: str = "videos/large_crowd.mp4"
 
-        if frame is None:
-            raise HTTPException(status_code=400, detail="Invalid image bytes.")
 
-        result = stream_manager.pipeline.process_frame(frame)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.post("/api/v1/source/video")
+def switch_to_video(payload: Optional[VideoSourcePayload] = None, video_path: Optional[str] = None):
+    """Switch vision feed to a local video file (e.g. 'videos/large_crowd.mp4')."""
+    target = video_path or (payload.video_path if payload else "videos/large_crowd.mp4")
+    success = stream_manager.set_source_video(target)
+    if not success:
+        raise HTTPException(status_code=400, detail=f"Could not open video file: {target}")
+    return {
+        "status": "ok",
+        "mode": "video",
+        "video_path": target,
+        "filename": os.path.basename(target),
+    }
+
+
+@app.get("/api/v1/videos")
+def list_available_videos():
+    """List all available video test files in the videos directory."""
+    videos_dir = os.path.join(os.path.dirname(__file__), "videos")
+    results = []
+    if os.path.exists(videos_dir):
+        for f in os.listdir(videos_dir):
+            if f.lower().endswith((".mp4", ".avi", ".mov", ".mkv", ".webm")):
+                fp = os.path.join(videos_dir, f)
+                rel_p = os.path.join("videos", f).replace("\\", "/")
+                is_active = (
+                    stream_manager.source_mode == "video"
+                    and os.path.basename(stream_manager.video_path or "") == f
+                )
+                results.append({
+                    "filename": f,
+                    "relative_path": rel_p,
+                    "size_mb": round(os.path.getsize(fp) / (1024 * 1024), 2),
+                    "is_active": is_active,
+                })
+    return {"videos": results, "active_source": stream_manager.source_mode, "current_video": stream_manager.video_path}
 
 
 @app.post("/api/v1/source/simulation")
@@ -230,6 +256,50 @@ def trigger_mock_surge():
     """Simulate a sudden stampede panic surge for testing mobile & dashboard alerts."""
     stream_manager.sim_tick += 120
     return {"status": "surge_simulated"}
+
+
+@app.get("/api/v1/telemetry/recent")
+async def get_recent_telemetry(limit: int = 15):
+    """Fetch the latest persisted telemetry rows directly from the PostgreSQL database."""
+    storage = stream_manager.telemetry_storage
+    if storage is None or not storage.is_connected:
+        return {"connected": False, "records": []}
+    records = await storage.fetch_recent_telemetry(limit=limit)
+    return {"connected": True, "count": len(records), "records": records}
+
+
+@app.get("/api/v1/telemetry/stats")
+async def get_telemetry_stats():
+    """Returns database connection status, overall stored record counts, and pipeline stats."""
+    storage = stream_manager.telemetry_storage
+    if storage is None:
+        return {"enabled": False, "message": "PostgreSQL telemetry disabled"}
+    summary = await storage.fetch_db_summary()
+    return {
+        "enabled": True,
+        "database": summary,
+        "camera_id": config.camera_id,
+        "location_name": config.location_name,
+        "queue_depth": storage.queue_depth,
+        "postgres_dsn": config.postgres_dsn.split("@")[-1],
+    }
+
+
+@app.post("/api/v1/process-frame", response_model=FrameDensityResult)
+async def process_single_frame(file: UploadFile = File(...)):
+    """Ingest a single frame via multipart/form-data upload and return density result."""
+    try:
+        contents = await file.read()
+        nparr = np.frombuffer(contents, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if frame is None:
+            raise HTTPException(status_code=400, detail="Invalid image bytes.")
+
+        result = stream_manager.pipeline.process_frame(frame)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/v1/telemetry/status")

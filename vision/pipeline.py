@@ -33,6 +33,7 @@ class CrowdVisionPipeline:
 
         self._frame_count = 0
         self._last_frame_time = time.perf_counter()
+        self._last_db_log_time = 0.0
 
         # Optional telemetry sink: any callable that accepts FrameDensityResult.
         # Register AsyncPostGISStorage.enqueue (or any other sink) here.
@@ -117,13 +118,14 @@ class CrowdVisionPipeline:
             metadata={"device": self.config.device, "model": self.config.model_name},
         )
 
-        should_log = self._should_log_telemetry(result)
+        should_log = self._should_log_telemetry(result, now)
 
         if annotate:
             annotated_frame = self.annotator.annotate(frame, result)
             # Fire telemetry sink (non-blocking enqueue to PostGIS worker) if frame meets throttling policy
             if self.telemetry_sink is not None and should_log:
                 try:
+                    self._last_db_log_time = now
                     self.telemetry_sink(result)
                 except Exception:
                     pass  # Sink errors must NEVER crash the vision loop
@@ -132,20 +134,29 @@ class CrowdVisionPipeline:
         # Fire telemetry sink (non-blocking enqueue to PostGIS worker) if frame meets throttling policy
         if self.telemetry_sink is not None and should_log:
             try:
+                self._last_db_log_time = now
                 self.telemetry_sink(result)
             except Exception:
                 pass  # Sink errors must NEVER crash the vision loop
 
         return result
 
-    def _should_log_telemetry(self, result: FrameDensityResult) -> bool:
+    def _should_log_telemetry(self, result: FrameDensityResult, now: float) -> bool:
         """
         Determines whether the current frame should be persisted to the database sink.
-        Decouples 30 FPS CV / WebSocket rate from throttled database logging (e.g. 5 FPS / every Nth frame).
+        Decouples CV processing rate from database ingestion rate.
+        Always logs the first frame and respects target telemetry FPS.
         Bypasses throttling immediately if emergency risk or panic surge is detected.
         """
+        if self._frame_count == 1:
+            return True
+
+        target_interval = 1.0 / max(0.1, self.config.postgres_telemetry_target_fps)
+        time_elapsed = (now - self._last_db_log_time) >= target_interval
+
         interval = max(1, self.config.postgres_log_interval_frames)
         is_stride_frame = (self._frame_count % interval == 0)
+
         is_critical_event = (
             self.config.postgres_force_log_on_critical
             and (
@@ -153,7 +164,7 @@ class CrowdVisionPipeline:
                 or result.movement.surge_detected
             )
         )
-        return is_stride_frame or is_critical_event
+        return time_elapsed or is_stride_frame or is_critical_event
 
     def process_video_stream(
         self,

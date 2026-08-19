@@ -12,20 +12,30 @@ except ImportError:
 
 
 def _parse_camera_id(val: Union[str, int, None]) -> int:
-    """Safely parse camera index/ID string (e.g. '0', 'Gate-1' -> 1)."""
+    """Safely parse camera index/ID string (e.g. '0', 'Gate-1' -> 1). If a path is passed, defaults to 1."""
     if val is None:
-        return 0
+        return 1
     if isinstance(val, int):
         return val
+    s = str(val).strip()
+    if s.endswith((".mp4", ".avi", ".mkv", ".mov", ".flv", ".webm")):
+        return 1
     try:
-        return int(val)
+        return int(s)
     except (ValueError, TypeError):
-        digits = "".join(filter(str.isdigit, str(val)))
-        return int(digits) if digits else 0
+        digits = "".join(filter(str.isdigit, s))
+        return int(digits) if digits else 1
 
 
 @dataclass
 class VisionConfig:
+    # Video Source & Mode Configuration
+    source_mode: str = os.environ.get("CROWDSHIELD_SOURCE_MODE", "video")  # "video", "camera", "simulation"
+    video_source: str = os.environ.get(
+        "CROWDSHIELD_VIDEO_SOURCE",
+        os.environ.get("CROWDSHIELD_VIDEO_PATH", "videos/large_crowd.mp4"),
+    )
+
     # Model Configuration: Supports TensorRT (.engine), ONNX (.onnx), or PyTorch (.pt)
     model_name: str = "yolov8n.engine" if os.path.exists("yolov8n.engine") else "yolov8n.pt"
     human_class_id: int = 0         # STRICT: Only class 0 ('person' in COCO dataset)
@@ -70,10 +80,10 @@ class VisionConfig:
     # Identifies the physical camera source and geographic deployment site.
     # These fields are persisted in every DB telemetry row.
     # -------------------------------------------------------------------------
-    camera_id: int = _parse_camera_id(os.environ.get("CROWDSHIELD_CAMERA_ID", "0"))
-    # ^ Camera index / device number (e.g. 0=main gate, 1=platform A, 2=exit corridor)
-    location_name: str = os.environ.get("CROWDSHIELD_LOCATION", "DEFAULT_LOCATION")
-    # ^ Human-readable deployment site label (e.g. "Gate-1", "Platform-A", "Exit-North")
+    camera_id: int = _parse_camera_id(os.environ.get("CROWDSHIELD_CAMERA_ID", "1"))
+    # ^ Camera index / device number (e.g. 1=main gate, 2=platform A, 3=exit corridor)
+    location_name: str = os.environ.get("CROWDSHIELD_LOCATION", "Main Entry")
+    # ^ Human-readable deployment site label (e.g. "Gate-1", "Platform-A", "Main Entry")
 
     # Geospatial anchor: WGS84 origin (EPSG:4326) for mapping pixel coords -> real-world lat/lng
     geo_origin_lat: float = float(os.environ.get("CROWDSHIELD_LAT", "28.6139"))
@@ -96,14 +106,14 @@ class VisionConfig:
         "POSTGRES_DSN",
         "postgresql://crowdshield:crowdshield@localhost:5432/crowdshield_db",
     )
-    postgres_min_pool: int = 2          # Minimum persistent DB connections in pool
-    postgres_max_pool: int = 10         # Maximum concurrent DB connections
-    postgres_batch_size: int = 50       # Flush queue to DB after N telemetry frames
+    postgres_min_pool: int = 1          # Minimum persistent DB connections in pool
+    postgres_max_pool: int = 5          # Maximum concurrent DB connections
+    postgres_batch_size: int = 20       # Flush queue to DB after N telemetry frames
     postgres_flush_interval_sec: float = 1.0   # Or flush every T seconds (whichever first)
     postgres_queue_maxsize: int = 1000  # Drop-on-overflow guard; prevents memory bloat
 
     # Telemetry Rate Throttling (Decouples 30 FPS CV loop from database ingestion rate, e.g. 5 FPS)
-    postgres_log_interval_frames: int = int(os.environ.get("POSTGRES_LOG_INTERVAL_FRAMES", "6"))  # Every Nth frame (6 @ 30fps = 5fps)
+    postgres_log_interval_frames: int = int(os.environ.get("POSTGRES_LOG_INTERVAL_FRAMES", "3"))  # Every Nth frame
     postgres_telemetry_target_fps: float = float(os.environ.get("POSTGRES_TELEMETRY_FPS", "5.0"))
     postgres_force_log_on_critical: bool = os.environ.get("POSTGRES_FORCE_LOG_ON_CRITICAL", "true").lower() == "true"
 
