@@ -577,16 +577,25 @@ private fun AlertsEmptyState(modifier: Modifier = Modifier) {
 
 // ─── Profile Tab Screen ────────────────────────────────────────────────────────
 
-private val ProfileBgDark       = Color(0xFF060F1E)
-private val ProfileBgMid        = Color(0xFF0A1F2F)
-private val ProfileCardBg       = Color(0xFF0E1C30)
-private val ProfileCardBorder   = Color(0x28FFFFFF)
-private val ProfileTextPrimary  = Color(0xFFE8F4F8)
-private val ProfileTextSecondary= Color(0x99E8F4F8)
-private val ProfileAccentGreen  = Color(0xFF00E5A0)
-private val ProfileAccentBlue   = Color(0xFF1E8FFF)
-private val ProfileAccentRed    = Color(0xFFFF4757)
-private val ProfileAccentGold   = Color(0xFFFFBB44)
+private val ProfileBgMain          = Color(0xFFF6F8FA)
+private val ProfileBgSubtle        = Color(0xFFEEF2F6)
+private val ProfileCardBg          = Color(0xFFFFFFFF)
+private val ProfileCardBorder      = Color(0xFFE2E8F0)
+private val ProfileDividerColor    = Color(0xFFF1F5F9)
+private val ProfileTextPrimary     = Color(0xFF0F172A)
+private val ProfileTextSecondary   = Color(0xFF64748B)
+private val ProfileTextMuted       = Color(0xFF94A3B8)
+private val ProfileAccentTeal      = Color(0xFF0D6E6E)
+private val ProfileAccentTealBg    = Color(0xFFE6F4F2)
+private val ProfileAccentGreen     = Color(0xFF059669)
+private val ProfileAccentGreenBg   = Color(0xFFECFDF5)
+private val ProfileAccentGreenBorder = Color(0xFFA7F3D0)
+private val ProfileAccentBlue      = Color(0xFF0284C7)
+private val ProfileAccentBlueBg    = Color(0xFFE0F2FE)
+private val ProfileAccentAmber     = Color(0xFFD97706)
+private val ProfileAccentAmberBg   = Color(0xFFFEF3C7)
+private val ProfileAccentRed       = Color(0xFFDC2626)
+private val ProfileAccentRedBg     = Color(0xFFFEE2E2)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -598,23 +607,23 @@ fun ProfilePlaceholderScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(ProfileBgDark, ProfileBgMid, ProfileBgDark)))
+            .background(Brush.verticalGradient(listOf(ProfileBgMain, ProfileBgSubtle, ProfileBgMain)))
     ) {
         // Dynamic subtle background canvas (grid + crowd nodes)
         Canvas(modifier = Modifier.fillMaxSize()) {
             val w = size.width
             val h = size.height
-            val gridStep = 48.dp.toPx()
-            val gridColor = Color(0xFF1E8FFF).copy(alpha = 0.04f)
+            val gridStep = 52.dp.toPx()
+            val gridColor = ProfileAccentTeal.copy(alpha = 0.035f)
 
             var x = 0f
             while (x < w) {
-                drawLine(gridColor, Offset(x, 0f), Offset(x, h), strokeWidth = 0.6f)
+                drawLine(gridColor, Offset(x, 0f), Offset(x, h), strokeWidth = 0.8f)
                 x += gridStep
             }
             var y = 0f
             while (y < h) {
-                drawLine(gridColor, Offset(0f, y), Offset(w, y), strokeWidth = 0.6f)
+                drawLine(gridColor, Offset(0f, y), Offset(w, y), strokeWidth = 0.8f)
                 y += gridStep
             }
 
@@ -628,12 +637,12 @@ fun ProfilePlaceholderScreen(
             )
             for (node in nodes) {
                 drawCircle(
-                    color = ProfileAccentGreen.copy(alpha = 0.12f),
+                    color = ProfileAccentTeal.copy(alpha = 0.05f),
                     radius = 16.dp.toPx(),
                     center = node
                 )
                 drawCircle(
-                    color = ProfileAccentGreen.copy(alpha = 0.35f),
+                    color = ProfileAccentTeal.copy(alpha = 0.18f),
                     radius = 3.dp.toPx(),
                     center = node
                 )
@@ -646,18 +655,26 @@ fun ProfilePlaceholderScreen(
                     title = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = ProfileTextPrimary,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(CircleShape)
+                                    .background(ProfileAccentTealBg),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    tint = ProfileAccentTeal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                             Text(
                                 text = "Profile",
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Black,
+                                fontWeight = FontWeight.Bold,
                                 color = ProfileTextPrimary
                             )
                         }
@@ -679,19 +696,20 @@ fun ProfilePlaceholderScreen(
             ) {
                 // Header Subtitle
                 Text(
-                    text = "Manage your safety, preferences and account settings",
+                    text = "Manage your safety preferences and account settings",
                     fontSize = 13.sp,
                     color = ProfileTextSecondary,
                     lineHeight = 18.sp,
                     modifier = Modifier.padding(horizontal = 4.dp)
                 )
 
-                // ── Profile Card ───────────────────────────────────────────────
+                // ── Profile Header Card ─────────────────────────────────────────
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = ProfileCardBg),
-                    border = BorderStroke(1.dp, ProfileCardBorder)
+                    border = BorderStroke(1.dp, ProfileCardBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(18.dp),
@@ -704,17 +722,17 @@ fun ProfilePlaceholderScreen(
                             // Avatar
                             Box(
                                 modifier = Modifier
-                                    .size(64.dp)
+                                    .size(60.dp)
                                     .clip(CircleShape)
-                                    .background(ProfileAccentBlue.copy(alpha = 0.15f))
-                                    .border(1.5.dp, ProfileAccentBlue.copy(alpha = 0.5f), CircleShape),
+                                    .background(ProfileAccentTealBg)
+                                    .border(1.5.dp, ProfileAccentTeal.copy(alpha = 0.25f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Person,
                                     contentDescription = "Avatar",
-                                    tint = ProfileAccentBlue,
-                                    modifier = Modifier.size(36.dp)
+                                    tint = ProfileAccentTeal,
+                                    modifier = Modifier.size(34.dp)
                                 )
                             }
 
@@ -741,9 +759,9 @@ fun ProfilePlaceholderScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFF002B1A))
-                                .border(1.dp, ProfileAccentGreen.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                                .background(ProfileAccentGreenBg)
+                                .border(1.dp, ProfileAccentGreenBorder, RoundedCornerShape(12.dp))
+                                .padding(horizontal = 14.dp, vertical = 9.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Box(
@@ -755,7 +773,7 @@ fun ProfilePlaceholderScreen(
                             Text(
                                 text = "Safety monitoring active",
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 color = ProfileAccentGreen
                             )
                         }
@@ -769,20 +787,23 @@ fun ProfilePlaceholderScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = ProfileCardBg),
-                    border = BorderStroke(1.dp, ProfileCardBorder)
+                    border = BorderStroke(1.dp, ProfileCardBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column {
                         // Current Location
                         ProfileItemRow(
                             icon = Icons.Default.LocationOn,
-                            iconColor = ProfileAccentGreen,
+                            iconColor = ProfileAccentTeal,
+                            iconBgColor = ProfileAccentTealBg,
                             title = "Current Location",
                             subtitle = "Sector 4 • East Concourse",
                             trailingContent = {
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(ProfileAccentGreen.copy(alpha = 0.15f))
+                                        .background(ProfileAccentGreenBg)
+                                        .border(1.dp, ProfileAccentGreenBorder, RoundedCornerShape(6.dp))
                                         .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
@@ -795,40 +816,43 @@ fun ProfilePlaceholderScreen(
                             }
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Alert Preferences
                         ProfileItemRow(
                             icon = Icons.Default.Notifications,
                             iconColor = ProfileAccentBlue,
+                            iconBgColor = ProfileAccentBlueBg,
                             title = "Alert Preferences",
                             subtitle = "Choose what alerts you want to receive",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Emergency Notifications
                         ProfileItemRow(
-                            icon = Icons.Default.Warning,
-                            iconColor = ProfileAccentGold,
+                            icon = Icons.Default.WarningAmber,
+                            iconColor = ProfileAccentAmber,
+                            iconBgColor = ProfileAccentAmberBg,
                             title = "Emergency Notifications",
                             subtitle = "Critical alerts & emergency messages",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Preferred Exits & Routes
                         ProfileItemRow(
                             icon = Icons.Default.Map,
-                            iconColor = ProfileAccentBlue,
+                            iconColor = ProfileAccentTeal,
+                            iconBgColor = ProfileAccentTealBg,
                             title = "Preferred Exits & Routes",
                             subtitle = "Set preferred exits for quick navigation",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Location Sharing (Toggle)
                         Row(
@@ -842,13 +866,13 @@ fun ProfilePlaceholderScreen(
                                 modifier = Modifier
                                     .size(38.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(ProfileAccentGreen.copy(alpha = 0.14f)),
+                                    .background(ProfileAccentTealBg),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
                                     contentDescription = null,
-                                    tint = ProfileAccentGreen,
+                                    tint = ProfileAccentTeal,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -870,10 +894,10 @@ fun ProfilePlaceholderScreen(
                                 checked = locationSharingEnabled,
                                 onCheckedChange = { locationSharingEnabled = it },
                                 colors = androidx.compose.material3.SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFF060F1E),
+                                    checkedThumbColor = Color.White,
                                     checkedTrackColor = ProfileAccentGreen,
-                                    uncheckedThumbColor = ProfileTextSecondary,
-                                    uncheckedTrackColor = ProfileCardBg
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFFCBD5E1)
                                 )
                             )
                         }
@@ -887,24 +911,27 @@ fun ProfilePlaceholderScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = ProfileCardBg),
-                    border = BorderStroke(1.dp, ProfileCardBorder)
+                    border = BorderStroke(1.dp, ProfileCardBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column {
                         // Emergency Contact
                         ProfileItemRow(
                             icon = Icons.Default.Phone,
                             iconColor = ProfileAccentRed,
+                            iconBgColor = ProfileAccentRedBg,
                             title = "Emergency Contact",
                             subtitle = "Add or update your emergency contact",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Emergency Assistance
                         ProfileItemRow(
                             icon = Icons.Default.Shield,
                             iconColor = ProfileAccentRed,
+                            iconBgColor = ProfileAccentRedBg,
                             title = "Emergency Assistance",
                             subtitle = "Quick access to help when needed",
                             onClick = {}
@@ -919,13 +946,15 @@ fun ProfilePlaceholderScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = ProfileCardBg),
-                    border = BorderStroke(1.dp, ProfileCardBorder)
+                    border = BorderStroke(1.dp, ProfileCardBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column {
                         // Language
                         ProfileItemRow(
                             icon = Icons.Default.Info,
                             iconColor = ProfileAccentBlue,
+                            iconBgColor = ProfileAccentBlueBg,
                             title = "Language",
                             subtitle = null,
                             trailingContent = {
@@ -939,36 +968,38 @@ fun ProfilePlaceholderScreen(
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Notification Settings
                         ProfileItemRow(
                             icon = Icons.Default.NotificationsActive,
-                            iconColor = ProfileAccentGold,
+                            iconColor = ProfileAccentAmber,
+                            iconBgColor = ProfileAccentAmberBg,
                             title = "Notification Settings",
                             subtitle = "Manage app notification preferences",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // About CrowdShield
                         ProfileItemRow(
                             icon = Icons.Default.Info,
                             iconColor = ProfileTextSecondary,
+                            iconBgColor = Color(0xFFF1F5F9),
                             title = "About CrowdShield",
                             subtitle = "Version 1.0.0",
                             trailingContent = {
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(0x1FFFFFFF))
+                                        .background(Color(0xFFF1F5F9))
                                         .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
                                         text = "v1.0.0",
                                         fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = ProfileTextSecondary
                                     )
                                 }
@@ -985,19 +1016,21 @@ fun ProfilePlaceholderScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = ProfileCardBg),
-                    border = BorderStroke(1.dp, ProfileCardBorder)
+                    border = BorderStroke(1.dp, ProfileCardBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column {
                         // Privacy & Safety
                         ProfileItemRow(
                             icon = Icons.Default.Security,
-                            iconColor = ProfileAccentGreen,
+                            iconColor = ProfileAccentTeal,
+                            iconBgColor = ProfileAccentTealBg,
                             title = "Privacy & Safety",
                             subtitle = "Data encryption & anonymous mesh telemetry",
                             onClick = {}
                         )
 
-                        HorizontalDivider(color = ProfileCardBorder, thickness = 0.5.dp)
+                        HorizontalDivider(color = ProfileDividerColor, thickness = 1.dp)
 
                         // Sign Out
                         Row(
@@ -1012,7 +1045,7 @@ fun ProfilePlaceholderScreen(
                                 modifier = Modifier
                                     .size(38.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(ProfileAccentRed.copy(alpha = 0.14f)),
+                                    .background(ProfileAccentRedBg),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -1049,14 +1082,15 @@ fun ProfilePlaceholderScreen(
                     Icon(
                         imageVector = Icons.Default.Shield,
                         contentDescription = null,
-                        tint = ProfileTextSecondary.copy(alpha = 0.4f),
+                        tint = ProfileTextMuted,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "CrowdShield · Stampede Prevention Mesh",
                         fontSize = 11.sp,
-                        color = ProfileTextSecondary.copy(alpha = 0.45f)
+                        fontWeight = FontWeight.Medium,
+                        color = ProfileTextMuted
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1072,15 +1106,16 @@ private fun ProfileSectionHeader(title: String) {
         fontSize = 11.sp,
         fontWeight = FontWeight.ExtraBold,
         color = ProfileTextSecondary,
-        letterSpacing = 1.4.sp,
+        letterSpacing = 1.2.sp,
         modifier = Modifier.padding(start = 4.dp, top = 2.dp)
     )
 }
 
 @Composable
 private fun ProfileItemRow(
-    icon: ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     iconColor: Color,
+    iconBgColor: Color = iconColor.copy(alpha = 0.12f),
     title: String,
     subtitle: String?,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -1098,7 +1133,7 @@ private fun ProfileItemRow(
             modifier = Modifier
                 .size(38.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(iconColor.copy(alpha = 0.14f)),
+                .background(iconBgColor),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -1133,10 +1168,11 @@ private fun ProfileItemRow(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = ProfileTextSecondary.copy(alpha = 0.5f),
+                tint = ProfileTextMuted,
                 modifier = Modifier.size(16.dp)
             )
         }
     }
 }
+
 
