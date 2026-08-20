@@ -253,13 +253,10 @@ class CrowdShieldDashboard {
   }
 
   setActivePill(activeId, label, path) {
-    const pillIds = ['btnLargeCrowd', 'btnMediumCrowd', 'btnSmallCrowd', 'btnCamMode', 'btnSimMode'];
-    pillIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        if (id === activeId) el.classList.add('active');
-        else el.classList.remove('active');
-      }
+    const allPills = document.querySelectorAll('#videoSourceBar .source-pill');
+    allPills.forEach(el => {
+      if (el.id === activeId) el.classList.add('active');
+      else el.classList.remove('active');
     });
 
     const activeSourceTag = document.getElementById('activeSourceTag');
@@ -362,6 +359,58 @@ class CrowdShieldDashboard {
 
     document.getElementById('btnTriggerSos')?.addEventListener('click', async () => {
       await fetch('/api/v1/trigger-mock-surge', { method: 'POST' });
+    });
+
+    // Handle Custom Video Upload for OpenCV / YOLO Analysis
+    const fileInput = document.getElementById('videoUploadInput');
+    const uploadLabel = document.getElementById('uploadLabel');
+    const uploadBtnText = document.getElementById('uploadBtnText');
+
+    fileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const originalText = uploadBtnText ? uploadBtnText.textContent : 'Upload Video';
+      if (uploadBtnText) uploadBtnText.textContent = 'Uploading & Analysing...';
+      if (uploadLabel) uploadLabel.classList.add('uploading');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/v1/videos/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || 'Failed to upload video');
+        }
+
+        // Check if button for this video already exists or dynamically create a pill
+        const btnId = `btn_custom_${data.filename.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        let pill = document.getElementById(btnId);
+        if (!pill) {
+          pill = document.createElement('button');
+          pill.id = btnId;
+          pill.className = 'source-pill';
+          pill.innerHTML = `<span class="indicator"></span>${data.filename}`;
+          pill.addEventListener('click', () => {
+            this.switchVideoSource(data.video_path, btnId, data.filename);
+          });
+          uploadLabel.parentNode.insertBefore(pill, uploadLabel);
+        }
+
+        this.setActivePill(btnId, data.filename, data.video_path);
+      } catch (err) {
+        console.error('Video upload failed:', err);
+        alert(`Video upload failed: ${err.message}`);
+      } finally {
+        if (uploadBtnText) uploadBtnText.textContent = originalText;
+        if (uploadLabel) uploadLabel.classList.remove('uploading');
+        fileInput.value = ''; // Reset input to allow re-uploading the same file if needed
+      }
     });
   }
 }

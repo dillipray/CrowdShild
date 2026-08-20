@@ -1,5 +1,7 @@
 package com.crowdshield.stampede.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,20 +25,27 @@ import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +55,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 
 private val CmdDark   = Color(0xFF060F1E)
 private val CmdMid    = Color(0xFF0A1F2F)
@@ -63,7 +74,8 @@ data class CommandFeature(
     val title: String,
     val description: String,
     val accentColor: Color,
-    val statusLabel: String
+    val statusLabel: String,
+    val isActionable: Boolean = false
 )
 
 private val commandFeatures = listOf(
@@ -73,6 +85,14 @@ private val commandFeatures = listOf(
         description = "Real-time crowd density and sensor telemetry across all zones",
         accentColor = CmdGreen,
         statusLabel = "ACTIVE"
+    ),
+    CommandFeature(
+        icon = Icons.Default.CloudUpload,
+        title = "Video Analysis",
+        description = "Upload and analyze video feeds using OpenCV & YOLO engines",
+        accentColor = Color(0xFFE67E22),
+        statusLabel = "UPLOAD",
+        isActionable = true
     ),
     CommandFeature(
         icon = Icons.Default.Map,
@@ -107,8 +127,34 @@ private val commandFeatures = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StaffCommandCenterScreen(
+    viewModel: StaffCommandCenterViewModel = hiltViewModel(),
     onLogout: () -> Unit
 ) {
+    val uploadState by viewModel.uploadState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    val videoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.uploadVideo(it) }
+    }
+
+    LaunchedEffect(uploadState) {
+        when (val state = uploadState) {
+            is UploadState.Success -> {
+                snackbarHostState.showSnackbar(
+                    "Analysis Complete: ${state.result.totalHumansDetected} humans detected. Risk: ${state.result.riskScore}"
+                )
+                viewModel.resetUploadState()
+            }
+            is UploadState.Error -> {
+                snackbarHostState.showSnackbar("Upload Failed: ${state.message}")
+                viewModel.resetUploadState()
+            }
+            else -> {}
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -155,6 +201,7 @@ fun StaffCommandCenterScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = CmdDark
     ) { paddingValues ->
         Column(
@@ -212,7 +259,15 @@ fun StaffCommandCenterScreen(
 
             // ── Feature Cards ──────────────────────────────────────────────────
             commandFeatures.forEach { feature ->
-                CommandFeatureCard(feature = feature)
+                CommandFeatureCard(
+                    feature = feature,
+                    isLoading = feature.isActionable && uploadState is UploadState.Uploading,
+                    onClick = {
+                        if (feature.isActionable) {
+                            videoPickerLauncher.launch("video/*")
+                        }
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -244,9 +299,15 @@ fun StaffCommandCenterScreen(
 }
 
 @Composable
-private fun CommandFeatureCard(feature: CommandFeature) {
+private fun CommandFeatureCard(
+    feature: CommandFeature,
+    isLoading: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = !isLoading) { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF0E1C30)),
         border = androidx.compose.foundation.BorderStroke(
@@ -270,12 +331,20 @@ private fun CommandFeatureCard(feature: CommandFeature) {
                     .border(1.dp, feature.accentColor.copy(alpha = 0.3f), RoundedCornerShape(14.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = feature.icon,
-                    contentDescription = null,
-                    tint = feature.accentColor,
-                    modifier = Modifier.size(26.dp)
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = feature.accentColor,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = feature.icon,
+                        contentDescription = null,
+                        tint = feature.accentColor,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
             }
 
             // Info
@@ -305,7 +374,7 @@ private fun CommandFeatureCard(feature: CommandFeature) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = feature.statusLabel,
+                    text = if (isLoading) "ANALYZING" else feature.statusLabel,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = feature.accentColor,

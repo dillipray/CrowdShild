@@ -67,3 +67,29 @@ def test_dashboard_websocket_telemetry_stream():
             assert "gridDensity" in data
             assert "summary" in data
             assert "riskScore" in data
+
+
+def test_video_upload_endpoint(tmp_path):
+    """Verify custom video file upload and switching."""
+    test_video_path = tmp_path / "valid_test.mp4"
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    out = cv2.VideoWriter(str(test_video_path), fourcc, 10.0, (160, 120))
+    for _ in range(5):
+        frame = np.zeros((120, 160, 3), dtype=np.uint8)
+        out.write(frame)
+    out.release()
+
+    with open(test_video_path, "rb") as f:
+        video_bytes = f.read()
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/v1/videos/upload",
+            files={"file": ("test_custom_crowd.mp4", video_bytes, "video/mp4")},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "ok"
+        assert data["filename"] == "test_custom_crowd.mp4"
+        assert "videos/test_custom_crowd.mp4" in data["video_path"]
+

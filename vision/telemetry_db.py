@@ -40,25 +40,19 @@ logger = logging.getLogger("CrowdShield.TelemetryDB")
 # Schema SQL
 # ---------------------------------------------------------------------------
 
-_DDL_EXTENSION = """
-CREATE EXTENSION IF NOT EXISTS postgis;
--- Attempt to enable TimescaleDB extension if available in the PostgreSQL environment
-DO $$
-BEGIN
-    CREATE EXTENSION IF NOT EXISTS timescaledb;
-EXCEPTION WHEN OTHERS THEN
-    -- TimescaleDB not installed or not in shared_preload_libraries; fallback to native range partitioning
-    NULL;
-END $$;
-"""
+# ---------------------------------------------------------------------------
+# NOTE: PostGIS is pre-enabled on Supabase — no CREATE EXTENSION needed.
+# Standard (non-partitioned) tables are used for full Supabase/PgBouncer
+# transaction-mode pooler compatibility (port 6543).
+# ---------------------------------------------------------------------------
 
 _DDL_TELEMETRY_FRAMES = """
 CREATE TABLE IF NOT EXISTS telemetry_frames (
-    id                  BIGSERIAL,
+    id                  BIGSERIAL       PRIMARY KEY,
     camera_id           INTEGER         NOT NULL,
     location_name       TEXT            NOT NULL,
     frame_index         BIGINT          NOT NULL,
-    captured_at         TIMESTAMPTZ     NOT NULL,
+    captured_at         TIMESTAMPTZ     NOT NULL DEFAULT now(),
     fps                 REAL            NOT NULL DEFAULT 0,
     frame_width         INTEGER         NOT NULL DEFAULT 0,
     frame_height        INTEGER         NOT NULL DEFAULT 0,
@@ -78,33 +72,8 @@ CREATE TABLE IF NOT EXISTS telemetry_frames (
     density_factor      REAL            NOT NULL DEFAULT 0,
     velocity_factor     REAL            NOT NULL DEFAULT 0,
     accel_factor        REAL            NOT NULL DEFAULT 0,
-    metadata            JSONB           NOT NULL DEFAULT '{}',
-    PRIMARY KEY (id, captured_at)
-) PARTITION BY RANGE (captured_at);
-"""
-
-_DDL_TELEMETRY_FRAMES_PARTITIONS = """
-CREATE TABLE IF NOT EXISTS telemetry_frames_default
-    PARTITION OF telemetry_frames DEFAULT;
-
-CREATE OR REPLACE FUNCTION create_telemetry_daily_partition(target_date DATE)
-RETURNS TEXT AS $$
-DECLARE
-    partition_name TEXT;
-    start_ts TIMESTAMPTZ;
-    end_ts TIMESTAMPTZ;
-BEGIN
-    partition_name := 'telemetry_frames_y' || to_char(target_date, 'YYYY_mm_dd');
-    start_ts := target_date::TIMESTAMPTZ;
-    end_ts := (target_date + INTERVAL '1 day')::TIMESTAMPTZ;
-    
-    EXECUTE format(
-        'CREATE TABLE IF NOT EXISTS %I PARTITION OF telemetry_frames FOR VALUES FROM (%L) TO (%L)',
-        partition_name, start_ts, end_ts
-    );
-    RETURN partition_name;
-END;
-$$ LANGUAGE plpgsql;
+    metadata            JSONB           NOT NULL DEFAULT '{}'
+);
 """
 
 _DDL_TELEMETRY_FRAMES_IDX = """
@@ -122,7 +91,7 @@ CREATE TABLE IF NOT EXISTS crowd_clusters_spatial (
     frame_id        BIGINT          NOT NULL,
     camera_id       INTEGER         NOT NULL,
     location_name   TEXT            NOT NULL,
-    captured_at     TIMESTAMPTZ     NOT NULL,
+    captured_at     TIMESTAMPTZ     NOT NULL DEFAULT now(),
     cluster_uid     VARCHAR(60)     NOT NULL,
     human_count     INTEGER         NOT NULL DEFAULT 0,
     density         REAL            NOT NULL DEFAULT 0,
@@ -130,8 +99,8 @@ CREATE TABLE IF NOT EXISTS crowd_clusters_spatial (
     severity        VARCHAR(20)     NOT NULL DEFAULT 'SAFE',
     geom            geometry(Point, 4326),
     CONSTRAINT fk_clusters_telemetry_frame
-        FOREIGN KEY (frame_id, captured_at)
-        REFERENCES telemetry_frames(id, captured_at)
+        FOREIGN KEY (frame_id)
+        REFERENCES telemetry_frames(id)
         ON DELETE CASCADE
 );
 """
@@ -147,7 +116,7 @@ CREATE TABLE IF NOT EXISTS hotspots_spatial (
     frame_id        BIGINT          NOT NULL,
     camera_id       INTEGER         NOT NULL,
     location_name   TEXT            NOT NULL,
-    captured_at     TIMESTAMPTZ     NOT NULL,
+    captured_at     TIMESTAMPTZ     NOT NULL DEFAULT now(),
     grid_row        INTEGER         NOT NULL,
     grid_col        INTEGER         NOT NULL,
     human_count     INTEGER         NOT NULL DEFAULT 0,
@@ -155,8 +124,8 @@ CREATE TABLE IF NOT EXISTS hotspots_spatial (
     risk_level      VARCHAR(20)     NOT NULL DEFAULT 'SAFE',
     geom            geometry(Polygon, 4326),
     CONSTRAINT fk_hotspots_telemetry_frame
-        FOREIGN KEY (frame_id, captured_at)
-        REFERENCES telemetry_frames(id, captured_at)
+        FOREIGN KEY (frame_id)
+        REFERENCES telemetry_frames(id)
         ON DELETE CASCADE
 );
 """
@@ -346,35 +315,16 @@ class AsyncPostGISStorage:
     # ------------------------------------------------------------------
 
     async def _init_schema(self) -> None:
-        """Run DDL to ensure PostGIS/TimescaleDB extension, partitioned tables, and indexes exist."""
+        """Run DDL to ensure tables and indexes exist on Supabase PostgreSQL."""
         async with self._pool.acquire() as conn:
-            await conn.execute(_DDL_EXTENSION)
             await conn.execute(_DDL_TELEMETRY_FRAMES)
-            await conn.execute(_DDL_TELEMETRY_FRAMES_PARTITIONS)
             await conn.execute(_DDL_TELEMETRY_FRAMES_IDX)
             await conn.execute(_DDL_CLUSTERS)
             await conn.execute(_DDL_CLUSTERS_IDX)
             await conn.execute(_DDL_HOTSPOTS)
             await conn.execute(_DDL_HOTSPOTS_IDX)
 
-            # Pre-provision daily partitions for today and next 7 days
-            try:
-                await conn.execute(
-                    """
-                    DO $$
-                    DECLARE
-                        i INT;
-                    BEGIN
-                        FOR i IN 0..7 LOOP
-                            PERFORM create_telemetry_daily_partition((CURRENT_DATE + i * INTERVAL '1 day')::DATE);
-                        END LOOP;
-                    END $$;
-                    """
-                )
-            except Exception as exc:
-                logger.warning("[PostGIS] Daily partition pre-provisioning notice: %s", exc)
-
-        logger.info("[PostGIS] Schema initialised (range-partitioned tables + spatial indexes ready).")
+        logger.info("[PostGIS] Schema initialised (Supabase-compatible tables + spatial indexes ready).")
 
     # ------------------------------------------------------------------
     # ------------------------------------------------------------------

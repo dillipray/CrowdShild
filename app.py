@@ -214,6 +214,51 @@ def switch_to_video(payload: Optional[VideoSourcePayload] = None, video_path: Op
     }
 
 
+@app.post("/api/v1/videos/upload")
+async def upload_video(file: UploadFile = File(...)):
+    """Upload a custom video file, save to videos/ directory, and switch vision stream to it."""
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No video file provided.")
+    
+    valid_extensions = (".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv")
+    filename = file.filename
+    if not any(filename.lower().endswith(ext) for ext in valid_extensions):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported video format. Allowed formats: {', '.join(valid_extensions)}"
+        )
+
+    videos_dir = os.path.join(os.path.dirname(__file__), "videos")
+    os.makedirs(videos_dir, exist_ok=True)
+
+    # Sanitize filename
+    safe_filename = "".join(c for c in filename if c.isalnum() or c in "._- ")
+    if not safe_filename:
+        safe_filename = f"upload_{int(time.time())}.mp4"
+
+    target_path = os.path.join(videos_dir, safe_filename)
+
+    try:
+        with open(target_path, "wb") as buffer:
+            while chunk := await file.read(1024 * 1024):  # 1MB buffer
+                buffer.write(chunk)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save video: {str(e)}")
+
+    rel_path = os.path.join("videos", safe_filename).replace("\\", "/")
+    success = stream_manager.set_source_video(rel_path)
+    if not success:
+        raise HTTPException(status_code=400, detail=f"Saved video, but OpenCV could not decode '{safe_filename}'.")
+
+    return {
+        "status": "ok",
+        "mode": "video",
+        "video_path": rel_path,
+        "filename": safe_filename,
+        "size_mb": round(os.path.getsize(target_path) / (1024 * 1024), 2),
+    }
+
+
 @app.get("/api/v1/videos")
 def list_available_videos():
     """List all available video test files in the videos directory."""

@@ -9,187 +9,187 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-11-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:4:5-79
-11-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:4:22-76
+11-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:4:5-79
+11-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:4:22-76
 12    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-12-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:5:5-81
-12-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:5:22-78
+12-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:5:5-81
+12-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:5:22-78
 13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-13-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:6:5-77
-13-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:6:22-74
+13-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:6:5-77
+13-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:6:22-74
 14    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-14-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:7:5-77
-14-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:7:22-74
+14-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:7:5-77
+14-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:7:22-74
 15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-15-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:8:5-86
-15-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:8:22-83
+15-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:8:5-86
+15-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:8:22-83
 16    <uses-permission android:name="android.permission.VIBRATE" />
-16-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:9:5-66
-16-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:9:22-63
+16-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:9:5-66
+16-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:9:22-63
 17
 18    <permission
-18-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+18-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
 19        android:name="com.crowdshield.stampede.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-19-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+19-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
 20        android:protectionLevel="signature" />
-20-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+20-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
 21
 22    <uses-permission android:name="com.crowdshield.stampede.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-22-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-22-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+22-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+22-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
 23
 24    <application
-24-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:11:5-34:19
+24-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:11:5-34:19
 25        android:name="com.crowdshield.stampede.CrowdShieldApplication"
-25-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:12:9-47
+25-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:12:9-47
 26        android:allowBackup="true"
-26-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:13:9-35
+26-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:13:9-35
 27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-27-->[androidx.core:core:1.13.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4f2d0d80b668a86e8372c10155ee0dbe\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+27-->[androidx.core:core:1.13.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\9c02ff97be2bfe200949b8542b2354cf\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 28        android:debuggable="true"
 29        android:extractNativeLibs="false"
 30        android:icon="@mipmap/ic_launcher"
-30-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:14:9-43
+30-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:14:9-43
 31        android:label="@string/app_name"
-31-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:15:9-41
+31-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:15:9-41
 32        android:roundIcon="@mipmap/ic_launcher_round"
-32-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:16:9-54
+32-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:16:9-54
 33        android:supportsRtl="true"
-33-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:17:9-35
+33-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:17:9-35
 34        android:testOnly="true"
 35        android:theme="@style/Theme.CrowdShield" >
-35-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:18:9-49
+35-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:18:9-49
 36        <activity
-36-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:19:9-27:20
+36-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:19:9-27:20
 37            android:name="com.crowdshield.stampede.ui.MainActivity"
-37-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:20:13-44
+37-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:20:13-44
 38            android:exported="true"
-38-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:21:13-36
+38-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:21:13-36
 39            android:theme="@style/Theme.CrowdShield" >
-39-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:22:13-53
+39-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:22:13-53
 40            <intent-filter>
-40-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:23:13-26:29
+40-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:23:13-26:29
 41                <action android:name="android.intent.action.MAIN" />
-41-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:24:17-69
-41-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:24:25-66
+41-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:24:17-69
+41-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:24:25-66
 42
 43                <category android:name="android.intent.category.LAUNCHER" />
-43-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:25:17-77
-43-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:25:27-74
+43-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:25:17-77
+43-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:25:27-74
 44            </intent-filter>
 45        </activity>
 46
 47        <service
-47-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:29:9-33:56
+47-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:29:9-33:56
 48            android:name="com.crowdshield.stampede.service.CrowdMonitorService"
-48-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:30:13-56
+48-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:30:13-56
 49            android:enabled="true"
-49-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:31:13-35
+49-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:31:13-35
 50            android:exported="false"
-50-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:32:13-37
+50-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:32:13-37
 51            android:foregroundServiceType="location" />
-51-->D:\develop\projects\CrowdShild\app\src\main\AndroidManifest.xml:33:13-53
+51-->D:\Developer\projects\CrowdShield\app\src\main\AndroidManifest.xml:33:13-53
 52
 53        <activity
-53-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\ac2ba56dc0f9c6001712ce9abd79edf2\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:23:9-25:39
+53-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\5884ee75bf53b61e3762506bda82de17\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:23:9-25:39
 54            android:name="androidx.activity.ComponentActivity"
-54-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\ac2ba56dc0f9c6001712ce9abd79edf2\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:24:13-63
+54-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\5884ee75bf53b61e3762506bda82de17\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:24:13-63
 55            android:exported="true" />
-55-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\ac2ba56dc0f9c6001712ce9abd79edf2\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:25:13-36
+55-->[androidx.compose.ui:ui-test-manifest:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\5884ee75bf53b61e3762506bda82de17\transformed\ui-test-manifest-1.7.2\AndroidManifest.xml:25:13-36
 56        <activity
-56-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\7514f61dd3d99131c663877e9c12eee0\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+56-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\6a2a0bf9902cd866b515ddbb690ae4be\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
 57            android:name="androidx.compose.ui.tooling.PreviewActivity"
-57-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\7514f61dd3d99131c663877e9c12eee0\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+57-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\6a2a0bf9902cd866b515ddbb690ae4be\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
 58            android:exported="true" />
-58-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\ashis\.gradle\caches\8.9\transforms\7514f61dd3d99131c663877e9c12eee0\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+58-->[androidx.compose.ui:ui-tooling-android:1.7.2] C:\Users\DillipRay\.gradle\caches\8.13\transforms\6a2a0bf9902cd866b515ddbb690ae4be\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
 59        <activity
-59-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\189cd6a9719fecd1004850dc5a5c0cff\transformed\play-services-base-18.3.0\AndroidManifest.xml:20:9-22:45
+59-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\f72e8117d4016d201da77a3dab81b8d7\transformed\play-services-base-18.3.0\AndroidManifest.xml:20:9-22:45
 60            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-60-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\189cd6a9719fecd1004850dc5a5c0cff\transformed\play-services-base-18.3.0\AndroidManifest.xml:20:19-85
+60-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\f72e8117d4016d201da77a3dab81b8d7\transformed\play-services-base-18.3.0\AndroidManifest.xml:20:19-85
 61            android:exported="false"
-61-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\189cd6a9719fecd1004850dc5a5c0cff\transformed\play-services-base-18.3.0\AndroidManifest.xml:22:19-43
+61-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\f72e8117d4016d201da77a3dab81b8d7\transformed\play-services-base-18.3.0\AndroidManifest.xml:22:19-43
 62            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-62-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\189cd6a9719fecd1004850dc5a5c0cff\transformed\play-services-base-18.3.0\AndroidManifest.xml:21:19-78
+62-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\f72e8117d4016d201da77a3dab81b8d7\transformed\play-services-base-18.3.0\AndroidManifest.xml:21:19-78
 63
 64        <meta-data
-64-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\62444a0cabb1a27b1c9be98771378938\transformed\play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+64-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\41ad0d0507254d9e21ba808c8d00724c\transformed\play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
 65            android:name="com.google.android.gms.version"
-65-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\62444a0cabb1a27b1c9be98771378938\transformed\play-services-basement-18.3.0\AndroidManifest.xml:22:13-58
+65-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\41ad0d0507254d9e21ba808c8d00724c\transformed\play-services-basement-18.3.0\AndroidManifest.xml:22:13-58
 66            android:value="@integer/google_play_services_version" />
-66-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\62444a0cabb1a27b1c9be98771378938\transformed\play-services-basement-18.3.0\AndroidManifest.xml:23:13-66
+66-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\41ad0d0507254d9e21ba808c8d00724c\transformed\play-services-basement-18.3.0\AndroidManifest.xml:23:13-66
 67
 68        <provider
-68-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+68-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
 69            android:name="androidx.startup.InitializationProvider"
-69-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+69-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
 70            android:authorities="com.crowdshield.stampede.androidx-startup"
-70-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+70-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
 71            android:exported="false" >
-71-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+71-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
 72            <meta-data
-72-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+72-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
 73                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-73-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+73-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
 74                android:value="androidx.startup" />
-74-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ashis\.gradle\caches\8.9\transforms\22e534d2812ff56672bd807fba698d37\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+74-->[androidx.emoji2:emoji2:1.3.0] C:\Users\DillipRay\.gradle\caches\8.13\transforms\fd26f59e0adc960c5bd954248a95ce6a\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
 75            <meta-data
-75-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ashis\.gradle\caches\8.9\transforms\dabefbd8a0ce838081aa2874f53d2a9c\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+75-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\DillipRay\.gradle\caches\8.13\transforms\97c15229b9b871b4b105bf3bcca1eacb\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
 76                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-76-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ashis\.gradle\caches\8.9\transforms\dabefbd8a0ce838081aa2874f53d2a9c\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+76-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\DillipRay\.gradle\caches\8.13\transforms\97c15229b9b871b4b105bf3bcca1eacb\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
 77                android:value="androidx.startup" />
-77-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ashis\.gradle\caches\8.9\transforms\dabefbd8a0ce838081aa2874f53d2a9c\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+77-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\DillipRay\.gradle\caches\8.13\transforms\97c15229b9b871b4b105bf3bcca1eacb\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
 78            <meta-data
-78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
 79                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-79-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+79-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
 80                android:value="androidx.startup" />
-80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
 81        </provider>
 82
 83        <service
-83-->[androidx.room:room-runtime:2.6.1] C:\Users\ashis\.gradle\caches\8.9\transforms\30a09057fbc2195bf5f829d5161ac420\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+83-->[androidx.room:room-runtime:2.6.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\e5fe9238140eb92958f43220dc9cfa3e\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
 84            android:name="androidx.room.MultiInstanceInvalidationService"
-84-->[androidx.room:room-runtime:2.6.1] C:\Users\ashis\.gradle\caches\8.9\transforms\30a09057fbc2195bf5f829d5161ac420\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+84-->[androidx.room:room-runtime:2.6.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\e5fe9238140eb92958f43220dc9cfa3e\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
 85            android:directBootAware="true"
-85-->[androidx.room:room-runtime:2.6.1] C:\Users\ashis\.gradle\caches\8.9\transforms\30a09057fbc2195bf5f829d5161ac420\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+85-->[androidx.room:room-runtime:2.6.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\e5fe9238140eb92958f43220dc9cfa3e\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
 86            android:exported="false" />
-86-->[androidx.room:room-runtime:2.6.1] C:\Users\ashis\.gradle\caches\8.9\transforms\30a09057fbc2195bf5f829d5161ac420\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+86-->[androidx.room:room-runtime:2.6.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\e5fe9238140eb92958f43220dc9cfa3e\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
 87
 88        <receiver
-88-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
 89            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
 90            android:directBootAware="false"
-90-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+90-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
 91            android:enabled="true"
-91-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+91-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
 92            android:exported="true"
-92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
 93            android:permission="android.permission.DUMP" >
-93-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+93-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
 94            <intent-filter>
-94-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+94-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
 95                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
 96            </intent-filter>
 97            <intent-filter>
-97-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+97-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
 98                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
 99            </intent-filter>
 100            <intent-filter>
-100-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+100-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
 101                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
 102            </intent-filter>
 103            <intent-filter>
-103-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+103-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
 104                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ashis\.gradle\caches\8.9\transforms\4c7fa5fcf53fb7a96d1c1f3d0197d7da\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\DillipRay\.gradle\caches\8.13\transforms\407c507ef3fc936320b68c07617b5828\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
 105            </intent-filter>
 106        </receiver>
 107    </application>

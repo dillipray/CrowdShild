@@ -94,3 +94,11 @@ data class IncidentReport(
     val timestamp: Long = System.currentTimeMillis()
 )
 
+data class VideoAnalysisResult(
+    val filename: String,
+    val videoPath: String,
+    val totalHumansDetected: Int,
+    val riskScore: Float,
+    val status: String
+)
+

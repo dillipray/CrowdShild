@@ -4,6 +4,7 @@ import com.crowdshield.stampede.di.AppModule;
 import com.crowdshield.stampede.service.CrowdMonitorService_GeneratedInjector;
 import com.crowdshield.stampede.ui.MainActivity_GeneratedInjector;
 import com.crowdshield.stampede.ui.MainViewModel_HiltModules;
+import com.crowdshield.stampede.ui.StaffCommandCenterViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -160,7 +161,8 @@ public final class CrowdShieldApplication_HiltComponents {
           ViewModelCBuilderModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
-          MainViewModel_HiltModules.KeyModule.class
+          MainViewModel_HiltModules.KeyModule.class,
+          StaffCommandCenterViewModel_HiltModules.KeyModule.class
       }
   )
   @ActivityRetainedScoped
@@ -197,7 +199,8 @@ public final class CrowdShieldApplication_HiltComponents {
   @Subcomponent(
       modules = {
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
-          MainViewModel_HiltModules.BindsModule.class
+          MainViewModel_HiltModules.BindsModule.class,
+          StaffCommandCenterViewModel_HiltModules.BindsModule.class
       }
   )
   @ViewModelScoped

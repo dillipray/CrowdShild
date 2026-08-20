@@ -8,17 +8,22 @@ import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import com.crowdshield.stampede.data.AppDatabase;
 import com.crowdshield.stampede.data.IncidentDao;
-import com.crowdshield.stampede.di.AppModule_ProvideAlertManagerFactory;
-import com.crowdshield.stampede.di.AppModule_ProvideAppDatabaseFactory;
-import com.crowdshield.stampede.di.AppModule_ProvideIncidentDaoFactory;
-import com.crowdshield.stampede.di.AppModule_ProvideRiskCalculatorFactory;
+import com.crowdshield.stampede.di.AppModule_Companion_ProvideAlertManagerFactory;
+import com.crowdshield.stampede.di.AppModule_Companion_ProvideAppDatabaseFactory;
+import com.crowdshield.stampede.di.AppModule_Companion_ProvideIncidentDaoFactory;
+import com.crowdshield.stampede.di.AppModule_Companion_ProvideOkHttpClientFactory;
+import com.crowdshield.stampede.di.AppModule_Companion_ProvideRiskCalculatorFactory;
 import com.crowdshield.stampede.domain.RiskCalculator;
+import com.crowdshield.stampede.network.VideoApiService;
 import com.crowdshield.stampede.notification.AlertManager;
+import com.crowdshield.stampede.repository.IncidentRepositoryImpl;
 import com.crowdshield.stampede.service.CrowdMonitorService;
 import com.crowdshield.stampede.service.CrowdMonitorService_MembersInjector;
 import com.crowdshield.stampede.ui.MainActivity;
 import com.crowdshield.stampede.ui.MainViewModel;
 import com.crowdshield.stampede.ui.MainViewModel_HiltModules;
+import com.crowdshield.stampede.ui.StaffCommandCenterViewModel;
+import com.crowdshield.stampede.ui.StaffCommandCenterViewModel_HiltModules;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import dagger.hilt.android.ActivityRetainedLifecycle;
 import dagger.hilt.android.ViewModelLifecycle;
@@ -40,12 +45,14 @@ import dagger.internal.DoubleCheck;
 import dagger.internal.IdentifierNameString;
 import dagger.internal.KeepFieldType;
 import dagger.internal.LazyClassKeyMap;
+import dagger.internal.MapBuilder;
 import dagger.internal.Preconditions;
 import dagger.internal.Provider;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import okhttp3.OkHttpClient;
 
 @DaggerGenerated
 @Generated(
@@ -380,7 +387,7 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(Collections.<String, Boolean>singletonMap(LazyClassKeyProvider.com_crowdshield_stampede_ui_MainViewModel, MainViewModel_HiltModules.KeyModule.provide()));
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(2).put(LazyClassKeyProvider.com_crowdshield_stampede_ui_MainViewModel, MainViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_crowdshield_stampede_ui_StaffCommandCenterViewModel, StaffCommandCenterViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -402,8 +409,13 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
     private static final class LazyClassKeyProvider {
       static String com_crowdshield_stampede_ui_MainViewModel = "com.crowdshield.stampede.ui.MainViewModel";
 
+      static String com_crowdshield_stampede_ui_StaffCommandCenterViewModel = "com.crowdshield.stampede.ui.StaffCommandCenterViewModel";
+
       @KeepFieldType
       MainViewModel com_crowdshield_stampede_ui_MainViewModel2;
+
+      @KeepFieldType
+      StaffCommandCenterViewModel com_crowdshield_stampede_ui_StaffCommandCenterViewModel2;
     }
   }
 
@@ -415,6 +427,8 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
     private final ViewModelCImpl viewModelCImpl = this;
 
     private Provider<MainViewModel> mainViewModelProvider;
+
+    private Provider<StaffCommandCenterViewModel> staffCommandCenterViewModelProvider;
 
     private ViewModelCImpl(SingletonCImpl singletonCImpl,
         ActivityRetainedCImpl activityRetainedCImpl, SavedStateHandle savedStateHandleParam,
@@ -430,11 +444,12 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
       this.mainViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
+      this.staffCommandCenterViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(Collections.<String, javax.inject.Provider<ViewModel>>singletonMap(LazyClassKeyProvider.com_crowdshield_stampede_ui_MainViewModel, ((Provider) mainViewModelProvider)));
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(2).put(LazyClassKeyProvider.com_crowdshield_stampede_ui_MainViewModel, ((Provider) mainViewModelProvider)).put(LazyClassKeyProvider.com_crowdshield_stampede_ui_StaffCommandCenterViewModel, ((Provider) staffCommandCenterViewModelProvider)).build());
     }
 
     @Override
@@ -444,7 +459,12 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
+      static String com_crowdshield_stampede_ui_StaffCommandCenterViewModel = "com.crowdshield.stampede.ui.StaffCommandCenterViewModel";
+
       static String com_crowdshield_stampede_ui_MainViewModel = "com.crowdshield.stampede.ui.MainViewModel";
+
+      @KeepFieldType
+      StaffCommandCenterViewModel com_crowdshield_stampede_ui_StaffCommandCenterViewModel2;
 
       @KeepFieldType
       MainViewModel com_crowdshield_stampede_ui_MainViewModel2;
@@ -473,6 +493,9 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
         switch (id) {
           case 0: // com.crowdshield.stampede.ui.MainViewModel 
           return (T) new MainViewModel(singletonCImpl.provideIncidentDaoProvider.get());
+
+          case 1: // com.crowdshield.stampede.ui.StaffCommandCenterViewModel 
+          return (T) new StaffCommandCenterViewModel(singletonCImpl.incidentRepositoryImplProvider.get());
 
           default: throw new AssertionError(id);
         }
@@ -570,6 +593,12 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
 
     private Provider<IncidentDao> provideIncidentDaoProvider;
 
+    private Provider<OkHttpClient> provideOkHttpClientProvider;
+
+    private Provider<VideoApiService> videoApiServiceProvider;
+
+    private Provider<IncidentRepositoryImpl> incidentRepositoryImplProvider;
+
     private Provider<RiskCalculator> provideRiskCalculatorProvider;
 
     private Provider<AlertManager> provideAlertManagerProvider;
@@ -584,8 +613,11 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
       this.provideAppDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 1));
       this.provideIncidentDaoProvider = DoubleCheck.provider(new SwitchingProvider<IncidentDao>(singletonCImpl, 0));
-      this.provideRiskCalculatorProvider = DoubleCheck.provider(new SwitchingProvider<RiskCalculator>(singletonCImpl, 2));
-      this.provideAlertManagerProvider = DoubleCheck.provider(new SwitchingProvider<AlertManager>(singletonCImpl, 3));
+      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 4));
+      this.videoApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<VideoApiService>(singletonCImpl, 3));
+      this.incidentRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<IncidentRepositoryImpl>(singletonCImpl, 2));
+      this.provideRiskCalculatorProvider = DoubleCheck.provider(new SwitchingProvider<RiskCalculator>(singletonCImpl, 5));
+      this.provideAlertManagerProvider = DoubleCheck.provider(new SwitchingProvider<AlertManager>(singletonCImpl, 6));
     }
 
     @Override
@@ -622,16 +654,25 @@ public final class DaggerCrowdShieldApplication_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.crowdshield.stampede.data.IncidentDao 
-          return (T) AppModule_ProvideIncidentDaoFactory.provideIncidentDao(singletonCImpl.provideAppDatabaseProvider.get());
+          return (T) AppModule_Companion_ProvideIncidentDaoFactory.provideIncidentDao(singletonCImpl.provideAppDatabaseProvider.get());
 
           case 1: // com.crowdshield.stampede.data.AppDatabase 
-          return (T) AppModule_ProvideAppDatabaseFactory.provideAppDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+          return (T) AppModule_Companion_ProvideAppDatabaseFactory.provideAppDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 2: // com.crowdshield.stampede.domain.RiskCalculator 
-          return (T) AppModule_ProvideRiskCalculatorFactory.provideRiskCalculator();
+          case 2: // com.crowdshield.stampede.repository.IncidentRepositoryImpl 
+          return (T) new IncidentRepositoryImpl(singletonCImpl.provideIncidentDaoProvider.get(), singletonCImpl.videoApiServiceProvider.get());
 
-          case 3: // com.crowdshield.stampede.notification.AlertManager 
-          return (T) AppModule_ProvideAlertManagerFactory.provideAlertManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+          case 3: // com.crowdshield.stampede.network.VideoApiService 
+          return (T) new VideoApiService(singletonCImpl.provideOkHttpClientProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 4: // okhttp3.OkHttpClient 
+          return (T) AppModule_Companion_ProvideOkHttpClientFactory.provideOkHttpClient();
+
+          case 5: // com.crowdshield.stampede.domain.RiskCalculator 
+          return (T) AppModule_Companion_ProvideRiskCalculatorFactory.provideRiskCalculator();
+
+          case 6: // com.crowdshield.stampede.notification.AlertManager 
+          return (T) AppModule_Companion_ProvideAlertManagerFactory.provideAlertManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           default: throw new AssertionError(id);
         }
