@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +49,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -60,8 +63,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -79,19 +82,23 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.cos
 import kotlin.math.sin
 
-// ─── Design tokens ───────────────────────────────────────────────────────────
-private val BgDark      = Color(0xFF060F1E)
-private val BgMid       = Color(0xFF0A1F2F)
-private val NodeGreen   = Color(0xFF00E5A0)
-private val NodeGreenDim= Color(0x3300E5A0)
-private val AccentBlue  = Color(0xFF1E8FFF)
-private val AccentBlueDim = Color(0x221E8FFF)
-private val GlassBg     = Color(0x18FFFFFF)
-private val GlassBorder = Color(0x33FFFFFF)
-private val OnGlass     = Color(0xFFE8F4F8)
-private val OnGlassHint = Color(0x99E8F4F8)
-private val StaffGold   = Color(0xFFFFBB44)
-private val StaffGoldDim= Color(0x33FFBB44)
+// ─── Design tokens (Light Safety Theme) ─────────────────────────────────────
+private val LightBgMain       = Color(0xFFF6F8FA)
+private val LightBgSubtle     = Color(0xFFEEF2F6)
+private val LightCardBg       = Color(0xFFFFFFFF)
+private val LightCardBorder   = Color(0xFFE2E8F0)
+private val TealPrimary       = Color(0xFF0D6E6E)
+private val TealPrimaryDark   = Color(0xFF084C4C)
+private val TealSubtle        = Color(0xFFE6F4F2)
+private val EmeraldAccent     = Color(0xFF059669)
+private val EmeraldSubtle     = Color(0xFFECFDF5)
+private val TextPrimary       = Color(0xFF0F172A)
+private val TextSecondary     = Color(0xFF64748B)
+private val TextMuted         = Color(0xFF94A3B8)
+private val StaffAmber        = Color(0xFFB45309)
+private val StaffAmberBg      = Color(0xFFFFFBEB)
+private val StaffAmberBorder  = Color(0xFFFDE68A)
+private val StaffAmberDark    = Color(0xFF78350F)
 
 // ─── Login Mode ──────────────────────────────────────────────────────────────
 private enum class LoginMode { PUBLIC, STAFF }
@@ -104,22 +111,22 @@ fun LoginScreen(
 ) {
     var mode by remember { mutableStateOf(LoginMode.PUBLIC) }
 
-    // Pulse animation for particles & radar rings
+    // Subtle gentle animation for background radar & mesh
     val infiniteTransition = rememberInfiniteTransition(label = "bg")
     val pulse by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = LinearEasing),
+            animation = tween(6000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "pulse"
     )
     val glow by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.85f,
+        initialValue = 0.4f,
+        targetValue = 0.8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2200, easing = FastOutSlowInEasing),
+            animation = tween(3000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glow"
@@ -128,9 +135,9 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(BgDark, BgMid, BgDark)))
+            .background(Brush.verticalGradient(listOf(LightBgMain, LightBgSubtle, LightBgMain)))
     ) {
-        // ── Dynamic background ──────────────────────────────────────────────
+        // ── Dynamic background mesh (Subtle light safety infrastructure) ─────
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCrowdMeshBackground(pulse, glow)
         }
@@ -139,8 +146,8 @@ fun LoginScreen(
         AnimatedContent(
             targetState = mode,
             transitionSpec = {
-                (fadeIn(tween(300)) + slideInVertically { it / 8 })
-                    .togetherWith(fadeOut(tween(200)) + slideOutVertically { -it / 8 })
+                (fadeIn(tween(250)) + slideInVertically { it / 10 })
+                    .togetherWith(fadeOut(tween(180)) + slideOutVertically { -it / 10 })
             },
             label = "loginMode"
         ) { currentMode ->
@@ -176,68 +183,99 @@ private fun PublicLoginPanel(
             .navigationBarsPadding()
             .imePadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp),
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         // Logo Area
         LogoBadge(glow = glow)
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "CrowdShield",
             fontSize = 32.sp,
             fontWeight = FontWeight.Black,
-            color = Color.White,
+            color = TextPrimary,
             letterSpacing = (-0.5).sp
         )
 
-        Text(
-            text = "Keep the crowd safe.",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = NodeGreen.copy(alpha = 0.85f),
-            letterSpacing = 0.4.sp
-        )
+        Spacer(modifier = Modifier.height(4.dp))
 
-        Spacer(modifier = Modifier.height(52.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(7.dp)
+                    .clip(CircleShape)
+                    .background(EmeraldAccent)
+            )
+            Text(
+                text = "Keep the crowd safe.",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TealPrimary,
+                letterSpacing = 0.2.sp
+            )
+        }
 
-        // Glass Card
-        Box(
+        Spacer(modifier = Modifier.height(36.dp))
+
+        // White Card
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(GlassBg)
-                .border(1.dp, GlassBorder, RoundedCornerShape(24.dp))
-                .padding(24.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    spotColor = Color(0x1A0D6E6E),
+                    ambientColor = Color(0x0A000000)
+                ),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = LightCardBg),
+            border = BorderStroke(1.dp, LightCardBorder)
         ) {
             Column(
+                modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Public Access",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = OnGlassHint,
-                    letterSpacing = 1.2.sp
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(TealSubtle)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "PUBLIC ACCESS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TealPrimary,
+                        letterSpacing = 1.2.sp
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
                     label = {
-                        Text("Phone Number", color = OnGlassHint, fontSize = 13.sp)
+                        Text("Phone Number", color = TextSecondary, fontSize = 13.sp)
+                    },
+                    placeholder = {
+                        Text("Enter your phone number", color = TextMuted, fontSize = 13.sp)
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Phone,
                             contentDescription = null,
-                            tint = NodeGreen,
+                            tint = TealPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -246,17 +284,17 @@ private fun PublicLoginPanel(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NodeGreen,
-                        unfocusedBorderColor = GlassBorder,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = NodeGreen,
-                        focusedContainerColor = Color(0x12FFFFFF),
-                        unfocusedContainerColor = Color(0x08FFFFFF)
+                        focusedBorderColor = TealPrimary,
+                        unfocusedBorderColor = LightCardBorder,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = TealPrimary,
+                        focusedContainerColor = Color(0xFFFAFCFC),
+                        unfocusedContainerColor = Color(0xFFFAFAFA)
                     )
                 )
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = onContinue,
@@ -265,15 +303,16 @@ private fun PublicLoginPanel(
                         .height(52.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = NodeGreen,
-                        contentColor = Color(0xFF060F1E)
+                        containerColor = TealPrimary,
+                        contentColor = Color.White
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp, pressedElevation = 4.dp)
                 ) {
                     Text(
                         text = "Continue",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.3.sp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
@@ -285,75 +324,97 @@ private fun PublicLoginPanel(
             }
         }
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Forgot text
         Text(
             text = "Forgot your number?",
             fontSize = 13.sp,
-            color = OnGlassHint,
-            modifier = Modifier.clickable { }
+            fontWeight = FontWeight.Medium,
+            color = TextSecondary,
+            modifier = Modifier
+                .clickable { }
+                .padding(4.dp)
         )
 
-        Spacer(modifier = Modifier.height(44.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Staff Access Divider
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(modifier = Modifier.weight(1f).height(1.dp).background(GlassBorder))
+            Box(modifier = Modifier.weight(1f).height(1.dp).background(LightCardBorder))
             Text(
-                text = "  OR  ",
+                text = "   OR   ",
                 fontSize = 11.sp,
-                color = OnGlassHint,
+                fontWeight = FontWeight.Bold,
+                color = TextMuted,
                 letterSpacing = 1.sp
             )
-            Box(modifier = Modifier.weight(1f).height(1.dp).background(GlassBorder))
+            Box(modifier = Modifier.weight(1f).height(1.dp).background(LightCardBorder))
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // Staff Access button
-        Text(
-            text = "Are you authorized staff?",
-            fontSize = 13.sp,
-            color = OnGlassHint
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
+        // Staff Access Card
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(StaffGoldDim)
-                .border(1.dp, StaffGold.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
-                .clickable(onClick = onSwitchToStaff)
-                .padding(vertical = 14.dp, horizontal = 20.dp),
-            contentAlignment = Alignment.Center
+                .clickable(onClick = onSwitchToStaff),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = StaffAmberBg),
+            border = BorderStroke(1.dp, StaffAmberBorder)
         ) {
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFFDE68A)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shield,
+                            contentDescription = null,
+                            tint = StaffAmber,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Staff Login",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StaffAmberDark
+                        )
+                        Text(
+                            text = "Authorized safety personnel",
+                            fontSize = 12.sp,
+                            color = StaffAmber
+                        )
+                    }
+                }
                 Icon(
-                    imageVector = Icons.Default.Shield,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = StaffGold,
+                    tint = StaffAmber,
                     modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Staff Login  →",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = StaffGold
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
@@ -375,11 +436,11 @@ private fun StaffLoginPanel(
             .navigationBarsPadding()
             .imePadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp),
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         // Back button
         Row(
@@ -389,80 +450,87 @@ private fun StaffLoginPanel(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(GlassBg)
-                    .border(1.dp, GlassBorder, CircleShape)
+                    .background(LightCardBg)
+                    .border(1.dp, LightCardBorder, CircleShape)
                     .clickable(onClick = onBack)
                     .padding(10.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = OnGlass,
+                    tint = TextPrimary,
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Staff Logo Badge
         LogoBadge(glow = glow, isStaff = true)
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "CrowdShield",
             fontSize = 28.sp,
             fontWeight = FontWeight.Black,
-            color = Color.White,
+            color = TextPrimary,
             letterSpacing = (-0.5).sp
         )
+
+        Spacer(modifier = Modifier.height(6.dp))
 
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(StaffGoldDim)
-                .border(1.dp, StaffGold.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .background(StaffAmberBg)
+                .border(1.dp, StaffAmberBorder, RoundedCornerShape(8.dp))
+                .padding(horizontal = 14.dp, vertical = 5.dp)
         ) {
             Text(
                 text = "STAFF PORTAL",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = StaffGold,
-                letterSpacing = 2.sp
+                color = StaffAmberDark,
+                letterSpacing = 1.8.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(44.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Glass Card
-        Box(
+        // White Card
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(GlassBg)
-                .border(
-                    1.dp,
-                    StaffGold.copy(alpha = 0.25f),
-                    RoundedCornerShape(24.dp)
-                )
-                .padding(24.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    spotColor = Color(0x1AB45309),
+                    ambientColor = Color(0x0A000000)
+                ),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = LightCardBg),
+            border = BorderStroke(1.dp, StaffAmberBorder)
         ) {
             Column(
+                modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(
                     value = staffId,
                     onValueChange = { staffId = it },
                     label = {
-                        Text("Staff ID / Email", color = OnGlassHint, fontSize = 13.sp)
+                        Text("Staff ID / Email", color = TextSecondary, fontSize = 13.sp)
+                    },
+                    placeholder = {
+                        Text("e.g. STF-8092", color = TextMuted, fontSize = 13.sp)
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
-                            tint = StaffGold,
+                            tint = StaffAmber,
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -470,29 +538,29 @@ private fun StaffLoginPanel(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = StaffGold,
-                        unfocusedBorderColor = GlassBorder,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = StaffGold,
-                        focusedContainerColor = Color(0x12FFFFFF),
-                        unfocusedContainerColor = Color(0x08FFFFFF)
+                        focusedBorderColor = StaffAmber,
+                        unfocusedBorderColor = LightCardBorder,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = StaffAmber,
+                        focusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedContainerColor = Color(0xFFFAFAFA)
                     )
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = {
-                        Text("Password", color = OnGlassHint, fontSize = 13.sp)
+                        Text("Password", color = TextSecondary, fontSize = 13.sp)
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = null,
-                            tint = StaffGold,
+                            tint = StaffAmber,
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -501,7 +569,7 @@ private fun StaffLoginPanel(
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                 contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                tint = OnGlassHint,
+                                tint = TextSecondary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -512,13 +580,13 @@ private fun StaffLoginPanel(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = StaffGold,
-                        unfocusedBorderColor = GlassBorder,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = StaffGold,
-                        focusedContainerColor = Color(0x12FFFFFF),
-                        unfocusedContainerColor = Color(0x08FFFFFF)
+                        focusedBorderColor = StaffAmber,
+                        unfocusedBorderColor = LightCardBorder,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = StaffAmber,
+                        focusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedContainerColor = Color(0xFFFAFAFA)
                     )
                 )
 
@@ -531,10 +599,10 @@ private fun StaffLoginPanel(
                         .height(52.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = StaffGold,
-                        contentColor = Color(0xFF1A0E00)
+                        containerColor = StaffAmberDark,
+                        contentColor = Color.White
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Shield,
@@ -545,7 +613,8 @@ private fun StaffLoginPanel(
                     Text(
                         text = "Sign In",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.3.sp
                     )
                 }
             }
@@ -561,13 +630,13 @@ private fun StaffLoginPanel(
                 modifier = Modifier
                     .size(6.dp)
                     .clip(CircleShape)
-                    .background(StaffGold.copy(alpha = 0.7f))
+                    .background(StaffAmber)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Authorized personnel only",
                 fontSize = 12.sp,
-                color = OnGlassHint,
+                color = TextSecondary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -575,33 +644,28 @@ private fun StaffLoginPanel(
                 modifier = Modifier
                     .size(6.dp)
                     .clip(CircleShape)
-                    .background(StaffGold.copy(alpha = 0.7f))
+                    .background(StaffAmber)
             )
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(36.dp))
     }
 }
 
 // ─── Logo Badge ───────────────────────────────────────────────────────────────
 @Composable
 private fun LogoBadge(glow: Float, isStaff: Boolean = false) {
-    val color = if (isStaff) StaffGold else NodeGreen
+    val brandColor = if (isStaff) StaffAmber else TealPrimary
+    val containerBg = if (isStaff) StaffAmberBg else TealSubtle
+
     Box(
         modifier = Modifier
-            .size(88.dp)
+            .size(84.dp)
             .clip(CircleShape)
-            .background(
-                Brush.radialGradient(
-                    listOf(
-                        color.copy(alpha = 0.18f * glow),
-                        Color.Transparent
-                    )
-                )
-            )
+            .background(containerBg)
             .border(
                 width = 1.5.dp,
-                color = color.copy(alpha = 0.5f),
+                color = brandColor.copy(alpha = 0.25f),
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
@@ -609,20 +673,20 @@ private fun LogoBadge(glow: Float, isStaff: Boolean = false) {
         Icon(
             imageVector = Icons.Default.Shield,
             contentDescription = "CrowdShield",
-            tint = color,
-            modifier = Modifier.size(40.dp)
+            tint = brandColor,
+            modifier = Modifier.size(42.dp)
         )
     }
 }
 
-// ─── Background Canvas ────────────────────────────────────────────────────────
+// ─── Background Canvas (Subtle Light Theme Grid & Nodes) ───────────────────────
 private fun DrawScope.drawCrowdMeshBackground(pulse: Float, glow: Float) {
     val w = size.width
     val h = size.height
 
-    // Grid lines — subtle blueprint feel
-    val gridStep = 52.dp.toPx()
-    val gridColor = Color(0xFF1E8FFF).copy(alpha = 0.07f)
+    // Grid lines — clean architectural safety blueprint
+    val gridStep = 56.dp.toPx()
+    val gridColor = Color(0xFF0D6E6E).copy(alpha = 0.035f)
     var x = 0f
     while (x < w) {
         drawLine(gridColor, Offset(x, 0f), Offset(x, h), strokeWidth = 0.8f)
@@ -634,20 +698,20 @@ private fun DrawScope.drawCrowdMeshBackground(pulse: Float, glow: Float) {
         y += gridStep
     }
 
-    // Crowd node network — static anchor nodes
+    // Anchor nodes
     val nodes = listOf(
-        Offset(w * 0.15f, h * 0.18f),
-        Offset(w * 0.70f, h * 0.10f),
-        Offset(w * 0.88f, h * 0.32f),
-        Offset(w * 0.25f, h * 0.42f),
-        Offset(w * 0.60f, h * 0.45f),
-        Offset(w * 0.10f, h * 0.70f),
-        Offset(w * 0.80f, h * 0.72f),
-        Offset(w * 0.45f, h * 0.82f),
+        Offset(w * 0.15f, h * 0.16f),
+        Offset(w * 0.72f, h * 0.12f),
+        Offset(w * 0.88f, h * 0.30f),
+        Offset(w * 0.22f, h * 0.40f),
+        Offset(w * 0.65f, h * 0.44f),
+        Offset(w * 0.12f, h * 0.68f),
+        Offset(w * 0.82f, h * 0.70f),
+        Offset(w * 0.48f, h * 0.84f),
         Offset(w * 0.90f, h * 0.90f)
     )
 
-    // Draw connecting edges between nearby nodes
+    // Connecting dashed lines
     val maxEdgeDist = (w * 0.42f)
     for (i in nodes.indices) {
         for (j in (i + 1) until nodes.size) {
@@ -655,9 +719,9 @@ private fun DrawScope.drawCrowdMeshBackground(pulse: Float, glow: Float) {
             val dy = nodes[i].y - nodes[j].y
             val dist = kotlin.math.sqrt(dx * dx + dy * dy)
             if (dist < maxEdgeDist) {
-                val alpha = (1f - dist / maxEdgeDist) * 0.18f
+                val alpha = (1f - dist / maxEdgeDist) * 0.08f
                 drawLine(
-                    color = Color(0xFF00E5A0).copy(alpha = alpha),
+                    color = Color(0xFF0D6E6E).copy(alpha = alpha),
                     start = nodes[i],
                     end = nodes[j],
                     strokeWidth = 0.8f,
@@ -667,48 +731,33 @@ private fun DrawScope.drawCrowdMeshBackground(pulse: Float, glow: Float) {
         }
     }
 
-    // Draw nodes themselves
+    // Draw nodes
     for ((idx, node) in nodes.withIndex()) {
-        val r = (4 + (idx % 3) * 2).dp.toPx()
+        val r = (3 + (idx % 3) * 1.5f).dp.toPx()
         drawCircle(
-            color = Color(0xFF00E5A0).copy(alpha = 0.15f + 0.12f * glow),
+            color = Color(0xFF0D6E6E).copy(alpha = 0.06f + 0.04f * glow),
             radius = r * 2.2f,
             center = node
         )
         drawCircle(
-            color = Color(0xFF00E5A0).copy(alpha = 0.55f),
-            radius = r * 0.7f,
+            color = Color(0xFF0D6E6E).copy(alpha = 0.20f),
+            radius = r * 0.8f,
             center = node
         )
     }
 
-    // Radar ring emanating from bottom-center
+    // Subtle radar arc
     val radarCenter = Offset(w * 0.5f, h * 1.15f)
     val maxRadius = h * 0.95f
-    for (ring in 0..3) {
-        val phase = ((pulse + ring * 0.25f) % 1f)
+    for (ring in 0..2) {
+        val phase = ((pulse + ring * 0.33f) % 1f)
         val radius = maxRadius * phase
-        val alpha = (1f - phase) * 0.12f
+        val alpha = (1f - phase) * 0.05f
         drawCircle(
-            color = Color(0xFF1E8FFF).copy(alpha = alpha),
+            color = Color(0xFF0D6E6E).copy(alpha = alpha),
             radius = radius,
             center = radarCenter,
-            style = Stroke(width = 1.5f)
+            style = Stroke(width = 1.2f)
         )
     }
-
-    // Accent arc for depth
-    val arcPath = Path().apply {
-        moveTo(-w * 0.1f, h * 0.35f)
-        cubicTo(
-            w * 0.2f, h * 0.15f,
-            w * 0.8f, h * 0.55f,
-            w * 1.1f, h * 0.30f
-        )
-    }
-    drawPath(
-        path = arcPath,
-        color = Color(0xFF00E5A0).copy(alpha = 0.06f),
-        style = Stroke(width = 2.dp.toPx())
-    )
 }
